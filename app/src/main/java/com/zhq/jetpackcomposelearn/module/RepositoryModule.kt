@@ -1,8 +1,10 @@
 package com.zhq.jetpackcomposelearn.module
 
 import com.zhq.jetpackcomposelearn.api.ApiService
+import com.zhq.jetpackcomposelearn.repo.HarmonyRepositoryImpl
 import com.zhq.jetpackcomposelearn.repo.HomeRepository
 import com.zhq.jetpackcomposelearn.repo.HomeRepositoryImpl
+import com.zhq.jetpackcomposelearn.repo.ProjectRepositoryImp
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,4 +24,14 @@ object RepositoryModule {
     @Singleton
     fun provideHomeRepository(apiService: ApiService): HomeRepositoryImpl =
         HomeRepositoryImpl(apiService)
+
+    @Provides
+    @Singleton
+    fun provideHarmonyRepository(apiService: ApiService): HarmonyRepositoryImpl =
+        HarmonyRepositoryImpl(apiService)
+
+    @Provides
+    @Singleton
+    fun provideProjectRepository(apiService: ApiService): ProjectRepositoryImp =
+        ProjectRepositoryImp(apiService)
 }

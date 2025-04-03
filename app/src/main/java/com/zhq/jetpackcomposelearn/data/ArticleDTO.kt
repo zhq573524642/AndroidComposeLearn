@@ -37,7 +37,8 @@ data class ArticleDTO(
     var userId: Int,
     var originId: Int,
     var visible: Int,
-    var zan: Int
+    var zan: Int,
+    var name: String
 ) : ProvideItemKey {
     override fun provideKey(): Int {
         return id

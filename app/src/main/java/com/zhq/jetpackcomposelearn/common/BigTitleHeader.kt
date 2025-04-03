@@ -1,5 +1,6 @@
 package com.zhq.jetpackcomposelearn.common
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -46,6 +47,7 @@ fun BigTitleHeader(
         }
         Row(
             modifier = Modifier.align(Alignment.CenterEnd),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically, content = actions
         )
     }

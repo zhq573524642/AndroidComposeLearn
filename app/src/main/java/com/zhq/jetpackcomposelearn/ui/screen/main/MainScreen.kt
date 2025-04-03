@@ -41,6 +41,7 @@ fun MainScreen(navHostController: NavHostController) {
     val destination = navBackStackEntry?.destination
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = Color(0xfff5f5f5),
         bottomBar = {
 
             if (destination?.hierarchy?.any {

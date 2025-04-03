@@ -6,6 +6,7 @@ import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
 import com.zhq.jetpackcomposelearn.data.PageDTO
 import com.zhq.jetpackcomposelearn.data.UserDTO
+import com.zhq.jetpackcomposelearn.ui.screen.harmony.model.HarmonyDTO
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -61,7 +62,26 @@ interface ApiService {
      * 问答
      */
     @GET("wenda/list/{pageIndex}/json")
-    suspend fun getQuestionsList(@Path("pageIndex") pageIndex: Int,
-                                 @Query("page_size") pageSize:Int):BaseResponse<PageDTO<ArticleDTO>>
+    suspend fun getQuestionsList(
+        @Path("pageIndex") pageIndex: Int,
+        @Query("page_size") pageSize: Int
+    ): BaseResponse<PageDTO<ArticleDTO>>
 
+    /**
+     * 鸿蒙专栏
+     */
+    @GET("harmony/index/json")
+    suspend fun getHarmonyData(): BaseResponse<HarmonyDTO>
+
+    /**
+     * 获取项目分类
+     */
+    @GET("project/tree/json")
+    suspend fun getProjectsType(): BaseResponse<List<ArticleDTO>>
+
+    /**
+     * 获取项目列表
+     */
+    @GET("project/list/{page}/json")//page 1开始
+    suspend fun getProjectsList(@Query("cid") cid: Int, @Path("page") pageIndex: Int):BaseResponse<PageDTO<ArticleDTO>>
 }

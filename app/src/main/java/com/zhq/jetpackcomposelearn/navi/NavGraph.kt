@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.zhq.commonlib.utils.ToastUtils.showCenterToast
 import com.zhq.commonlib.utils.ToastUtils.showToast
 import com.zhq.jetpackcomposelearn.base.UserManager
@@ -19,6 +21,8 @@ import com.zhq.jetpackcomposelearn.ui.screen.mine.MineScreen
 import com.zhq.jetpackcomposelearn.ui.screen.projects.ProjectsScreen
 import com.zhq.jetpackcomposelearn.ui.screen.questions.QuestionsScreen
 import com.zhq.jetpackcomposelearn.ui.screen.search.SearchScreen
+import com.zhq.jetpackcomposelearn.ui.screen.web.WebViewRoute
+import com.zhq.jetpackcomposelearn.ui.screen.web.WebViewScreen
 
 
 /**
@@ -53,11 +57,13 @@ fun NavGraph(
 
                 }
             ) { article: ArticleDTO ->
-                article.title.showCenterToast()
+                navHostController.navigate(WebViewRoute(article.title, article.link))
             }
         }
         composable(PageRoute.Harmony.name) {
-            HarmonyScreen()
+            HarmonyScreen(onItemClick = { title, link ->
+                navHostController.navigate(WebViewRoute(title = title, url = link))
+            })
         }
         composable(PageRoute.Projects.name) {
             ProjectsScreen()
@@ -88,6 +94,11 @@ fun NavGraph(
             }
         }
 
+        composable<WebViewRoute> { navBackStackEntry: NavBackStackEntry ->
+            val route: WebViewRoute = navBackStackEntry.toRoute()
+            WebViewScreen(route = route, navHostController = navHostController)
+        }
+
 
     }
 }
@@ -100,5 +111,6 @@ enum class PageRoute {
     Questions,
     Mine,
     SearchPage,
-    LoginScreen
+    LoginScreen,
+    WebView,
 }

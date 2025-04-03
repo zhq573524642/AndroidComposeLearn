@@ -58,7 +58,7 @@ fun QuestionsScreen(
             items(datas.itemCount) { index ->
                 val data = datas[index]
                 if (data != null) {
-                    Text(text = data.title)
+                   QuestionItem(data = data)
                 }/*else{
                 EmptyScreen()
             }*/

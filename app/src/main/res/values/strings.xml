@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">JetpackComposeLearn</string>
     <string name="noMoreData">暂无更多数据</string>
+    <string name="title_activity_immerse_test">ImmerseTestActivity</string>
 </resources>

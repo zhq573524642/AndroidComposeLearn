@@ -69,9 +69,12 @@ dependencies {
     api(libs.androidx.runtime.livedata)
     //Navigation Compose
     api(libs.androidx.navigation.compose)
+    api(libs.kotlinx.serialization.json)
 //    api(libs.kotlinx.serialization.json)
     //MMKV
     api(libs.mmkv)
+    //状态栏设置
+    api(libs.accompanist.systemuicontroller)
 
     testApi(libs.junit)
     androidTestApi(libs.androidx.junit)

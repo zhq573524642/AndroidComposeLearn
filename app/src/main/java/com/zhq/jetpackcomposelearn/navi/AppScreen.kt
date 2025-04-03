@@ -1,10 +1,12 @@
 package com.zhq.jetpackcomposelearn.navi
 
 import android.app.Activity
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.zhq.jetpackcomposelearn.ext.decorFitsSystemWindows
