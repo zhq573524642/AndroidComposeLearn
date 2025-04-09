@@ -1,5 +1,6 @@
 package com.zhq.commonlib.base
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zhq.commonlib.data.model.BaseResponse
@@ -17,12 +18,13 @@ import kotlin.math.log
  * @Date 2025/3/5 15:51
  * Description
  */
+private const val TAG = "BaseViewModel"
 abstract class BaseViewModel<T> : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<T>>(UiState(true))
     val uiState: StateFlow<UiState<T>> = _uiState
 
-    protected fun emitUiState(
+    protected  fun emitUiState(
         showLoading: Boolean = false,
         data: T? = null,
         error: String? = null,
@@ -31,6 +33,7 @@ abstract class BaseViewModel<T> : ViewModel() {
     ) {
         _uiState.value = UiState(showLoading, data, error, showLoadingMore, noMoreData)
     }
+
 
     fun launch(
         tryBlock: suspend CoroutineScope.() -> Unit,
@@ -42,6 +45,7 @@ abstract class BaseViewModel<T> : ViewModel() {
             try {
                 tryBlock()
             } catch (e: Exception) {
+                Log.d(TAG, "===Launch异常: ${e.message}")
                 BaseApp.baseAppViewModel.emitException(e)
                 catchBlock()
             } finally {

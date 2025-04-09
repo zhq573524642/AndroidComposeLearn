@@ -70,8 +70,8 @@ fun LoginScreen(
     //调用登录接口
     fun callLogin(account: String, pwd: String, isShowLoginSuccessToast: Boolean = true) {
         viewModel.login(account, pwd,
-            failedCall = {
-
+            failedCall = { code, msg ->
+                msg.showToast()
             }) {
             if (isShowLoginSuccessToast) {
                 "登录成功".showToast()
@@ -87,7 +87,8 @@ fun LoginScreen(
         repassword: String
     ) {
         viewModel.register(account, password, repassword,
-            failedCall = {
+            failedCall = { code, msg ->
+                msg.showToast()
 
             }) {
             "注册成功".showToast()

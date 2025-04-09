@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.zhq.commonlib.base.BaseAppViewModel
 import com.zhq.jetpackcomposelearn.data.CollectDataDTO
 import com.zhq.jetpackcomposelearn.data.UserDTO
+import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -16,7 +17,7 @@ class AppViewModel :BaseAppViewModel() {
 
     /** 全局用户 */
     private val _user = MutableStateFlow(UserManager.getUser())
-    val user: StateFlow<UserDTO?> = _user
+    val user: StateFlow<UserInfoDTO?> = _user
 
     /** 分享添加文章 */
     private val _shareArticleEvent = MutableLiveData<Boolean>()
@@ -27,7 +28,7 @@ class AppViewModel :BaseAppViewModel() {
     val collectEvent: LiveData<CollectDataDTO> = _collectEvent
 
     /** emit全局用户 */
-    fun emitUser(user: UserDTO?) {
+    fun emitUser(user: UserInfoDTO?) {
         _user.value = user
     }
 

@@ -9,6 +9,7 @@ import com.zhq.jetpackcomposelearn.data.PageDTO
  */
 data class PagerPageState<T>(
     val pageData: PageDTO<T> = PageDTO(curPage = 1, emptyList(), pageCount = 1),
+    val isRefreshing: Boolean = false,
     val isLoadingMore: Boolean = false,
     val error: String? = null
 )

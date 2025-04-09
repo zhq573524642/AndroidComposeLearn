@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -55,6 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.zhq.jetpackcomposelearn.R
+import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 
 /**
@@ -70,8 +72,7 @@ fun HarmonyScreen(
     onItemClick: (String, String) -> Unit
 ) {
     val datas by viewModel.harmonyData.collectAsState()
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setStatusBarColor(Color(0xff262626), darkIcons = false)
+
     var inputContent by remember {
         mutableStateOf("")
     }
@@ -80,91 +81,99 @@ fun HarmonyScreen(
             viewModel.getHarmonyData()
         }
     }
-    Column(modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xff262626)),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
-                text = "OpenHarmony三方库",
-                fontSize = 25.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-
-            TextField(value = inputContent,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(5.dp),
+    DynamicStatusBarScreen(
+        statusBarColor = Color(0xff262626),
+        backgroundColor = Color(0xfff5f5f5)
+    ){
+        Column(modifier = modifier
+            .fillMaxSize()) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 40.dp, end = 40.dp, bottom = 20.dp)
-                    .height(45.dp),
-                onValueChange = {
-                    inputContent = it
-                },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "")
-                },
-                trailingIcon = {
-                    Text(text = "搜索", modifier = Modifier.clickable {
-
-                    })
-                }
-            )
-
-
-        }
-
-        Column(
-            modifier = Modifier.background(Color(0xfff5f5f5))
-        ) {
-            LazyColumn(
-                contentPadding = PaddingValues(vertical = 12.dp, horizontal = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .background(Color(0xff262626)),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                stickyHeader {
-                    HarmonyHeader(title = datas?.tools?.name ?: "")
-                }
-                itemsIndexed(
-                    datas?.tools?.articleList ?: emptyList()
-                ) { index: Int, item: ArticleDTO ->
-                    HarmonyItem(title = item.title, desc = item.desc, link = item.link) {
-                        onItemClick.invoke(item.title, item.link)
+                Text(
+                    modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
+                    text = "OpenHarmony三方库",
+                    fontSize = 25.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+
+                TextField(value = inputContent,
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.White,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(5.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 40.dp, end = 40.dp, bottom = 20.dp)
+                        .height(45.dp),
+                    onValueChange = {
+                        inputContent = it
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "")
+                    },
+                    trailingIcon = {
+                        Text(text = "搜索", modifier = Modifier.clickable {
+
+                        })
                     }
-                }
+                )
 
-                stickyHeader {
-                    HarmonyHeader(title = datas?.links?.name ?: "")
-                }
-                itemsIndexed(
-                    datas?.links?.articleList ?: emptyList()
-                ) { index: Int, item: ArticleDTO ->
-                    HarmonyItem(title = item.title, desc = item.desc, link = item.link) {
 
-                    }
-                }
-
-                stickyHeader {
-                    HarmonyHeader(title = datas?.open_sources?.name ?: "")
-                }
-                itemsIndexed(
-                    datas?.open_sources?.articleList ?: emptyList()
-                ) { index: Int, item: ArticleDTO ->
-                    HarmonyItem(title = item.title, desc = item.desc, link = item.link) {
-
-                    }
-                }
             }
 
+            Column(
+                modifier = Modifier.background(Color(0xfff5f5f5))
+            ) {
+                LazyColumn(
+                    contentPadding = PaddingValues(vertical = 12.dp, horizontal = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    stickyHeader {
+                        HarmonyHeader(title = datas?.tools?.name ?: "")
+                    }
+                    itemsIndexed(
+                        datas?.tools?.articleList ?: emptyList()
+                    ) { index: Int, item: ArticleDTO ->
+                        HarmonyItem(title = item.title, desc = item.desc, link = item.link) {
+                            onItemClick.invoke(item.title, item.link)
+                        }
+                    }
+
+                    stickyHeader {
+                        HarmonyHeader(title = datas?.links?.name ?: "")
+                    }
+                    itemsIndexed(
+                        datas?.links?.articleList ?: emptyList()
+                    ) { index: Int, item: ArticleDTO ->
+                        HarmonyItem(title = item.title, desc = item.desc, link = item.link) {
+
+                        }
+                    }
+
+                    stickyHeader {
+                        HarmonyHeader(title = datas?.open_sources?.name ?: "")
+                    }
+                    itemsIndexed(
+                        datas?.open_sources?.articleList ?: emptyList()
+                    ) { index: Int, item: ArticleDTO ->
+                        HarmonyItem(title = item.title, desc = item.desc, link = item.link) {
+
+                        }
+                    }
+                }
+
+            }
         }
     }
+
+
 }
 
 @Composable

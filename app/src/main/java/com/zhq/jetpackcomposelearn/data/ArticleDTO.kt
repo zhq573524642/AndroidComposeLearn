@@ -1,6 +1,6 @@
 package com.zhq.jetpackcomposelearn.data
 
-import com.zhq.jetpackcomposelearn.common.ProvideItemKey
+import com.zhq.jetpackcomposelearn.common.ProvideItemKeys
 
 
 data class ArticleDTO(
@@ -38,8 +38,10 @@ data class ArticleDTO(
     var originId: Int,
     var visible: Int,
     var zan: Int,
-    var name: String
-) : ProvideItemKey {
+    var name: String,
+    var children: List<ArticleDTO>,
+    var cover:String,
+) : ProvideItemKeys {
     override fun provideKey(): Int {
         return id
     }

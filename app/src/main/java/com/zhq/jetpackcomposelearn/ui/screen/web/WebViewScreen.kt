@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
+import com.zhq.jetpackcomposelearn.common.BaseScreen
 import com.zhq.jetpackcomposelearn.common.CenterTitleHeader
 import com.zhq.jetpackcomposelearn.ui.theme.JetpackComposeLerarnTheme
 import kotlinx.serialization.Serializable
@@ -42,9 +43,7 @@ fun WebViewScreen(
     route: WebViewRoute,
     navHostController: NavHostController
 ) {
-    Column {
-        CenterTitleHeader(title = route.title
-            , onBack = { navHostController.popBackStack() })
+    BaseScreen(title = route.title, onBack = { navHostController.popBackStack() }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,6 +62,7 @@ fun WebViewScreen(
             })
         }
     }
+
 
 
 }

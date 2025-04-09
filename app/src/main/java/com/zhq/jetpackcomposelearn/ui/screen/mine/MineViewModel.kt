@@ -1,0 +1,32 @@
+package com.zhq.jetpackcomposelearn.ui.screen.mine
+
+import androidx.compose.runtime.collectAsState
+import com.zhq.commonlib.base.BaseViewModel
+import com.zhq.jetpackcomposelearn.App
+import com.zhq.jetpackcomposelearn.base.AppViewModel
+import com.zhq.jetpackcomposelearn.base.UserManager
+import com.zhq.jetpackcomposelearn.data.UserDTO
+import com.zhq.jetpackcomposelearn.data.UserInfoDTO
+
+/**
+ * @Author ZhangHuiQiang
+ * @Date 2025/4/9 14:48
+ * Description
+ */
+class MineViewModel constructor() : BaseViewModel<Unit>() {
+
+    fun getUserName(): String {
+        val user: UserDTO = UserManager.getUser()?.userInfo ?: return "请登录"
+        return if (user.nickname.isNotEmpty()) user.nickname else user.username
+    }
+
+    fun getUserLevel(): String {
+        val user: UserInfoDTO = UserManager.getUser() ?: return "lv：——"
+        return "lv：${user.coinInfo.level}"
+    }
+
+    fun getUserCoinCount(): String {
+        val user: UserInfoDTO = UserManager.getUser() ?: return "0"
+        return user.coinInfo.coinCount
+    }
+}

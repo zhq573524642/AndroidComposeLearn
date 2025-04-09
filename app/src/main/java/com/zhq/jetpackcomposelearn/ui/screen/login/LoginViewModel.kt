@@ -1,8 +1,10 @@
 package com.zhq.jetpackcomposelearn.ui.screen.login
 
 import com.zhq.commonlib.base.BaseViewModel
+import com.zhq.commonlib.data.model.BaseResponse
 import com.zhq.jetpackcomposelearn.App
 import com.zhq.jetpackcomposelearn.base.UserManager
+import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 import com.zhq.jetpackcomposelearn.repo.LoginRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -19,20 +21,23 @@ class LoginViewModel @Inject constructor(private val repo: LoginRepositoryImpl) 
     fun login(
         account: String,
         password: String,
-        failedCall: () -> Unit = {},
+        failedCall: (Int,String) -> Unit,
         successCall: () -> Unit = {}
     ) {
         launch({
             handleRequest(repo.login(account, password),
                 errorBlock = {
-                    failedCall.invoke()
-                    false
+                    failedCall.invoke(it.errorCode,it.errorMsg)
+                    true
                 }) {
                 UserManager.saveLastUserName(it.data.username)
                 UserManager.storeLastUserPwd(password)
-                UserManager.saveUser(it.data)
-                App.appViewModel.emitUser(it.data)
-                successCall.invoke()
+                handleRequest(repo.getUserInfo()){response:BaseResponse<UserInfoDTO>->
+                    App.appViewModel.emitUser(response.data)
+                    UserManager.saveUser(response.data)
+                    successCall.invoke()
+                }
+
             }
         })
     }
@@ -41,14 +46,14 @@ class LoginViewModel @Inject constructor(private val repo: LoginRepositoryImpl) 
         account: String,
         password: String,
         repassword:String,
-        failedCall: () -> Unit = {},
+        failedCall: (Int,String) -> Unit,
         successCall: () -> Unit = {}
     ){
         launch({
             handleRequest(repo.register(account,password,repassword),
                 errorBlock = {
-                    failedCall.invoke()
-                    false
+                    failedCall.invoke(it.errorCode,it.errorMsg)
+                    true
                 }){
                 successCall.invoke()
             }

@@ -20,5 +20,7 @@ data class UserDTO(
     val password: String = "",
     val token: String = "",
     val type: Int = 0,
-    val username: String = ""
+    val username: String = "",
+    val coinCount:String=""
 ) : Parcelable
+

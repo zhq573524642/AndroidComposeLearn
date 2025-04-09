@@ -4,6 +4,7 @@ import com.zhq.commonlib.data.model.BaseResponse
 import com.zhq.jetpackcomposelearn.api.ApiService
 import com.zhq.jetpackcomposelearn.base.BaseRepository
 import com.zhq.jetpackcomposelearn.data.UserDTO
+import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 import javax.inject.Inject
 
 /**
@@ -16,6 +17,7 @@ interface LoginRepository {
 
     suspend fun login(username: String, password: String): BaseResponse<UserDTO>
     suspend fun register(username: String, password: String, rePassword: String): BaseResponse<Any?>
+    suspend fun getUserInfo():BaseResponse<UserInfoDTO>
 }
 
 class LoginRepositoryImpl @Inject constructor(private val apiService: ApiService) :
@@ -30,6 +32,10 @@ class LoginRepositoryImpl @Inject constructor(private val apiService: ApiService
         rePassword: String
     ): BaseResponse<Any?> {
         return apiService.register(username, password, rePassword)
+    }
+
+    override suspend fun getUserInfo(): BaseResponse<UserInfoDTO> {
+        return apiService.getUserInfo()
     }
 
 }

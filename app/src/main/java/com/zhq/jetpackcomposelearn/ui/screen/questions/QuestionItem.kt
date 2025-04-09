@@ -3,6 +3,7 @@ package com.zhq.jetpackcomposelearn.ui.screen.questions
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,12 +40,16 @@ import com.zhq.jetpackcomposelearn.data.TagDTO
  */
 @Composable
 fun QuestionItem(
-    data: ArticleDTO
+    data: ArticleDTO,
+    onQuestionItemClick:(ArticleDTO)->Unit
 ) {
 
     Surface(
         color = Color.White,
-        shape = RoundedCornerShape(10.dp)
+        shape = RoundedCornerShape(10.dp),
+        modifier = Modifier.clickable {
+            onQuestionItemClick.invoke(data)
+        }
     ) {
         Column(
             modifier = Modifier

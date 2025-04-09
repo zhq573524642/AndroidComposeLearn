@@ -1,11 +1,22 @@
 package com.zhq.jetpackcomposelearn.base
 
+import android.util.Log
 import com.tencent.mmkv.MMKV
+import com.zhq.commonlib.data.model.BaseResponse
+import com.zhq.commonlib.http.RetrofitManager
+import com.zhq.commonlib.utils.JsonUtils
+import com.zhq.jetpackcomposelearn.data.ArticleDTO
+import com.zhq.jetpackcomposelearn.data.PageDTO
 import com.zhq.jetpackcomposelearn.data.UserDTO
+import com.zhq.jetpackcomposelearn.data.UserInfoDTO
+import com.zhq.jetpackcomposelearn.ui.screen.systems.model.SystemsDTO
+import kotlin.math.log
 
 /**
  * 数据管理类
  */
+private const val TAG = "UserManager"
+
 object UserManager {
 
     /** MMKV独有的mmapId */
@@ -21,6 +32,9 @@ object UserManager {
     /** 保存登录成功的用户Token */
     private const val KEY_TOKEN = "token"
 
+    private const val DATA_SYSTEMS = "data_systems"
+    private const val DATA_COURSE_LIST = "data_course_list"
+
 
     private val mmkv by lazy { MMKV.mmkvWithID(MMKV_MAP_ID) }
 
@@ -29,7 +43,7 @@ object UserManager {
      *
      * @param user    用户
      */
-    fun saveUser(user: UserDTO) {
+    fun saveUser(user: UserInfoDTO) {
         mmkv.encode(KEY_USER, user)
     }
 
@@ -38,8 +52,8 @@ object UserManager {
      *
      * @return 本地用户信息
      */
-    fun getUser(): UserDTO? {
-        return mmkv.decodeParcelable(KEY_USER, UserDTO::class.java)
+    fun getUser(): UserInfoDTO? {
+        return mmkv.decodeParcelable(KEY_USER, UserInfoDTO::class.java)
     }
 
 
@@ -116,5 +130,36 @@ object UserManager {
         mmkv.remove(KEY_USER)
         mmkv.remove(KEY_LAST_USER_PASSWORD)
         mmkv.remove(KEY_TOKEN)
+    }
+
+    //数据
+    fun setCacheSystemsData(json: String) {
+        mmkv.encode(DATA_SYSTEMS, json)
+    }
+
+    fun getSystemsCacheData(): List<SystemsDTO>? {
+        val json = mmkv.decodeString(DATA_SYSTEMS)
+        if (json?.isEmpty() == true) return emptyList()
+        return JsonUtils.fromJson<List<SystemsDTO>>(json)
+    }
+
+    fun setCacheCourseData(json: String) {
+        mmkv.encode(DATA_COURSE_LIST, json)
+    }
+
+    fun getCourseCacheData(): BaseResponse<List<ArticleDTO>>? {
+        val json = mmkv.decodeString(DATA_COURSE_LIST)
+        if (json?.isEmpty() == true) return null
+        return JsonUtils.fromJson<BaseResponse<List<ArticleDTO>>>(json)
+    }
+
+    fun setCacheCourseCatalogData(cid: Int, pageIndex: Int, json: String) {
+        mmkv.encode("${cid}_${pageIndex}", json)
+    }
+
+    fun getCourseCatalogCacheData(cid: Int, pageIndex: Int): BaseResponse<PageDTO<ArticleDTO>>? {
+        val json = mmkv.decodeString("${cid}_${pageIndex}")
+        if (json?.isEmpty() == true) return null
+        return JsonUtils.fromJson<BaseResponse<PageDTO<ArticleDTO>>>(json)
     }
 }

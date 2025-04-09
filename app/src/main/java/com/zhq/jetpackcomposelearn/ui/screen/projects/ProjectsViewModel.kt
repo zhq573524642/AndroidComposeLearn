@@ -1,5 +1,6 @@
 package com.zhq.jetpackcomposelearn.ui.screen.projects
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,13 +9,17 @@ import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.PageDTO
 import com.zhq.jetpackcomposelearn.repo.ProjectRepositoryImp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import javax.inject.Inject
+import kotlin.math.log
 
 /**
  * @Author ZhangHuiQiang
  * @Date 2025/4/3 13:49
  * Description
  */
+private const val TAG = "ProjectsViewModel"
+
 @HiltViewModel
 class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryImp) :
     BaseViewModel<Unit>() {
@@ -51,7 +56,7 @@ class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryI
     }
 
 
-    private fun loadTabData() {
+    fun loadTabData() {
         launch({
             _tabsState.value = DataResults.Loading()
             handleRequest(repo.getProjectsType(),
@@ -60,10 +65,8 @@ class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryI
                     true
                 }) {
                 _tabsState.value = DataResults.Success(it.data)
-                if (it.data.isNotEmpty()) {
-                    _tabCount.value = it.data.size
-                    loadPagerData(0, isRefresh = true)
-                }
+                _tabCount.value = it.data.size
+                loadPagerData(0, isRefresh = true)
             }
         })
     }
@@ -75,30 +78,31 @@ class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryI
         }
     }
 
-    fun loadPagerData(tabIndex: Int, isRefresh: Boolean) {
+    fun loadPagerData(tabIndex: Int, isRefresh: Boolean = true) {
         val tabId = getTabId(tabIndex) ?: return
         val currentState = _pagerStates[tabId] ?: PagerPageState()
         if (currentState.isLoadingMore) return
         if (!isRefresh && currentState.pageData.curPage >= currentState.pageData.pageCount) return
         val targetPage = if (isRefresh) 1 else currentState.pageData.curPage + 1
-
         _pagerStates[tabId] = currentState.copy(
+            isRefreshing = isRefresh,
             isLoadingMore = !isRefresh,
             error = null
         )
-
         launch({
-            handleRequest(repo.getProjectsList(tabId, targetPage),
+            handleRequest(repo.getProjectsList(targetPage, tabId),
                 errorBlock = {
                     _pagerStates[tabId] = currentState.copy(
                         error = it.errorMsg ?: "加载失败",
+                        isRefreshing = false,
                         isLoadingMore = false
                     )
-                    true
+                    false
                 }) {
                 _pagerStates[tabId] = if (isRefresh) {
                     PagerPageState(
                         pageData = it.data,
+                        isRefreshing = false,
                         isLoadingMore = false
                     )
                 } else {
@@ -108,9 +112,11 @@ class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryI
                             curPage = targetPage,
                             pageCount = it.data.pageCount
                         ),
+                        isRefreshing = false,
                         isLoadingMore = false
                     )
                 }
+
             }
         })
     }

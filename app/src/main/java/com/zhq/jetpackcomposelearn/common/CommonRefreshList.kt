@@ -1,5 +1,6 @@
 package com.zhq.jetpackcomposelearn.common
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,18 +35,21 @@ import com.zhq.jetpackcomposelearn.R
 import kotlinx.coroutines.delay
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.ui.unit.Dp
+import kotlin.math.log
 
 /**
  * @Author ZhangHuiQiang
  * @Date 2025/3/6 14:34
  * Description
  */
-
+private const val TAG = "CommonRefreshList"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T : ProvideItemKey> CommonRefreshList(
+fun <T : ProvideItemKeys> CommonRefreshList(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    itemSpace: Dp = 12.dp,
     uiState: UiState<List<T>>?,
     lazyListState: LazyListState = rememberLazyListState(),
     onRefresh: (() -> Unit)?,
@@ -61,8 +65,7 @@ fun <T : ProvideItemKey> CommonRefreshList(
     }
     PullToRefreshBox(
         modifier = modifier.fillMaxWidth(),
-        isRefreshing = uiState?.showLoading ?: false
-        , onRefresh = {
+        isRefreshing = uiState?.showLoading ?: false, onRefresh = {
             onRefresh?.invoke()
         }) {
         LazyColumn(
@@ -71,7 +74,7 @@ fun <T : ProvideItemKey> CommonRefreshList(
                 .fillMaxHeight(),
             state = lazyListState,
             contentPadding = contentPadding,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(itemSpace)
         ) {
             item {
                 headerContent?.invoke()
@@ -83,7 +86,7 @@ fun <T : ProvideItemKey> CommonRefreshList(
                 if (onLoadMore != null) {
                     item {
                         if (uiState.showLoadingMore) {
-                            LoadingView()
+                            LoadingMoreView()
                             LaunchedEffect(Unit) {
                                 delay(500)
                                 onLoadMore()
@@ -92,19 +95,7 @@ fun <T : ProvideItemKey> CommonRefreshList(
                     }
                     item {
                         if (uiState.noMoreData) {
-                            "暂无更多数据".showToast()
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 20.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.noMoreData),
-                                    color = LocalContentColor.current.copy(alpha = 0.6f),
-                                    fontSize = 14.sp
-                                )
-                            }
+                           NoMoreDataView()
                         }
                     }
                 }
@@ -132,20 +123,4 @@ fun <T : ProvideItemKey> CommonRefreshList(
             }
         }
     }
-}
-
-@Composable
-fun LoadingView() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(modifier = Modifier.size(30.dp))
-    }
-}
-
-interface ProvideItemKey {
-    fun provideKey(): Int
 }

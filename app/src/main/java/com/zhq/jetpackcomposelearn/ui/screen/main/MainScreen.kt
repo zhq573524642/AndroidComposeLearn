@@ -24,7 +24,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.navi.NavGraph
 import com.zhq.jetpackcomposelearn.navi.PageRoute
@@ -39,6 +41,11 @@ import com.zhq.jetpackcomposelearn.navi.PageRoute
 fun MainScreen(navHostController: NavHostController) {
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val destination = navBackStackEntry?.destination
+//    val systemUiController = rememberSystemUiController()
+//    systemUiController.setStatusBarColor(
+//        color = Color.Transparent,
+//        darkIcons = false // 初始图标颜色
+//    )
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color(0xfff5f5f5),

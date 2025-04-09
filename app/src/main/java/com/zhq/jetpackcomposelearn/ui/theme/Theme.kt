@@ -40,7 +40,6 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun JetpackComposeLerarnTheme(
-    isStatusBarTransparent: Boolean = false,
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
@@ -55,15 +54,7 @@ fun JetpackComposeLerarnTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-//    val view = LocalView.current
-//    if (!view.isInEditMode) {
-//        SideEffect {
-//            val window = (view.context as Activity).window
-//            window.statusBarColor =
-//                if (isStatusBarTransparent) Color.Transparent.toArgb() else colorScheme.primary.toArgb()
-//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-//        }
-//    }
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,

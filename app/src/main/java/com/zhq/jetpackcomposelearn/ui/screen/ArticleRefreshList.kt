@@ -58,7 +58,7 @@ fun ArticleRefreshList(
         }
     } else {
         uiState.data?.forEach {
-            user!!.collectIds.forEach { id ->
+            user?.userInfo?.collectIds?.forEach { id ->
                 if (id == it.id) {
                     it.collect = true
                 }
