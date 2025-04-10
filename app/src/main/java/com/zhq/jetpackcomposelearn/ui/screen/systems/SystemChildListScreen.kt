@@ -31,10 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.zhq.jetpackcomposelearn.common.BaseScreen
+import com.zhq.commonlib.base.widgets.BaseRefreshListContainer
 import com.zhq.jetpackcomposelearn.common.CenterTitleHeader
-import com.zhq.jetpackcomposelearn.common.CommonRefreshList
-import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import kotlinx.serialization.Serializable
 
@@ -57,21 +55,22 @@ fun SystemsChildListScreen(
     onAuthorClick: (ArticleDTO) -> Unit,
     onItemClick: (ArticleDTO) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    BaseScreen(title = route.name, onBack = { navHostController.popBackStack() }) {
-        CommonRefreshList(
-            uiState = uiState,
-            contentPadding = PaddingValues(12.dp),
-            onRefresh = { viewModel.getSystemChildList(route.id, true) },
-            onLoadMore = {
-                viewModel.getSystemChildList(route.id,false)
-            }) {
-            ItemView(item = it,
-                onAuthorClick = { item: ArticleDTO ->
-                    onAuthorClick.invoke(item)
-                }) { item: ArticleDTO ->
-                onItemClick.invoke(item)
-            }
+    val uiPageState by viewModel.uiPageState.collectAsState()
+    BaseRefreshListContainer(
+        topAppBar = {
+            CenterTitleHeader(title = route.name, onBack = { navHostController.popBackStack() })
+        },
+        uiPageState = uiPageState,
+        contentPadding = PaddingValues(12.dp),
+        onRefresh = { viewModel.getSystemChildList(route.id, true) },
+        onLoadMore = {
+            viewModel.getSystemChildList(route.id, false)
+        }) {
+        ItemView(item = it,
+            onAuthorClick = { item: ArticleDTO ->
+                onAuthorClick.invoke(item)
+            }) { item: ArticleDTO ->
+            onItemClick.invoke(item)
         }
     }
 }

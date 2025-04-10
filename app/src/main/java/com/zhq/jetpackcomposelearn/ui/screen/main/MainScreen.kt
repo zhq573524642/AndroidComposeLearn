@@ -1,5 +1,7 @@
 package com.zhq.jetpackcomposelearn.ui.screen.main
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,20 +48,41 @@ fun MainScreen(navHostController: NavHostController) {
 //        color = Color.Transparent,
 //        darkIcons = false // 初始图标颜色
 //    )
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = Color(0xfff5f5f5),
-        bottomBar = {
+//    Scaffold(
+//        modifier = Modifier.fillMaxSize(),
+//        containerColor = Color(0xfff5f5f5),
+//        bottomBar = {
+//
+//            if (destination?.hierarchy?.any {
+//                    navigationItemList.map { navBarItem -> navBarItem.route }
+//                        .contains(it.route)
+//                } == true) {
+//                BottomNavigationBar(navHostController, destination)
+//            }
+//        }
+//    ) { innerPadding ->
+//        NavGraph(navHostController = navHostController, paddingValues = innerPadding)
+//    }
 
-            if (destination?.hierarchy?.any {
-                    navigationItemList.map { navBarItem -> navBarItem.route }
-                        .contains(it.route)
-                } == true) {
-                BottomNavigationBar(navHostController, destination)
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xfff5f5f5))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+
+            NavGraph(navHostController = navHostController)
         }
-    ) { innerPadding ->
-        NavGraph(navHostController = navHostController, paddingValues = innerPadding)
+        if (destination?.hierarchy?.any {
+                navigationItemList.map { navBarItem -> navBarItem.route }
+                    .contains(it.route)
+            } == true) {
+            BottomNavigationBar(navHostController, destination)
+        }
     }
 }
 

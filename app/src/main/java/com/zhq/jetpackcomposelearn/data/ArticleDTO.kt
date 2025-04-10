@@ -1,6 +1,6 @@
 package com.zhq.jetpackcomposelearn.data
 
-import com.zhq.jetpackcomposelearn.common.ProvideItemKeys
+import com.zhq.commonlib.ext.ProvideItemKeys
 
 
 data class ArticleDTO(

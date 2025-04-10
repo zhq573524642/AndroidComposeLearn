@@ -1,6 +1,6 @@
 package com.zhq.jetpackcomposelearn.ui.screen.systems.model
 
-import com.zhq.jetpackcomposelearn.common.ProvideItemKeys
+import com.zhq.commonlib.ext.ProvideItemKeys
 
 /**
  * @Author ZhangHuiQiang

@@ -1,6 +1,5 @@
 package com.zhq.jetpackcomposelearn.ui.screen.course
 
-import android.util.Log
 import com.zhq.jetpackcomposelearn.repo.CourseRepositoryImpl
 import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,10 +15,8 @@ class CourseCatalogViewModel @Inject constructor(private val repo: CourseReposit
     ArticleViewModel(repo) {
 
     fun getCourseCatalogList(cid: Int, isRefresh: Boolean) {
-        emitUiState(
-            showLoading = isRefresh,
-            data = articleList,
-        )
+
+        showLoading(isRefresh, data = articleList)
 
         launch({
             if (isRefresh) {
@@ -27,26 +24,33 @@ class CourseCatalogViewModel @Inject constructor(private val repo: CourseReposit
                 currentPage = 0
             }
             if (currentPage == 0) {
-                handleRequest(repo.getCourseCatalogList(currentPage, cid)) {
+                handleRequest(repo.getCourseCatalogList(currentPage, cid),
+                    errorBlock = {
+                        showError(it.errorMsg)
+                        true
+                    }) {
                     currentPage++
-                    emitUiState(
-                        showLoadingMore = true,
-                        data = articleList.apply { addAll(it.data.datas) }
-                    )
+                    articleList.apply { addAll(it.data.datas) }
+                    if (articleList.isEmpty()){
+                        showEmpty()
+                    }else{
+                        showContent(data = articleList, isLoadOver = it.data.over)
+                    }
                 }
             } else {
-                handleRequest(repo.getCourseCatalogList(currentPage, cid)) {
+                handleRequest(repo.getCourseCatalogList(currentPage, cid),
+                    errorBlock = {
+                        showLoadMoreError(data = articleList, msg = it.errorMsg)
+                        true
+                    }) {
                     articleList.addAll(it.data.datas)
                     if (it.data.over) {
-                        emitUiState(
-                            data =
-                            articleList, showLoadingMore = false, noMoreData = true
-                        )
+                        showContent(data = articleList, isLoadOver = true)
                         return@handleRequest
                     }
                     currentPage = it.data.curPage
 
-                    emitUiState(data = articleList, showLoadingMore = true)
+                    showContent(data = articleList, isLoadOver = false)
                 }
             }
 

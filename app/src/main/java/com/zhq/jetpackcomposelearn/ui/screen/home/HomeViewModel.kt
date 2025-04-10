@@ -2,7 +2,6 @@ package com.zhq.jetpackcomposelearn.ui.screen.home
 
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
-import com.zhq.jetpackcomposelearn.repo.HomeRepository
 import com.zhq.jetpackcomposelearn.repo.HomeRepositoryImpl
 import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,8 +33,8 @@ class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
     }
 
     fun getHomeArticleList(isRefresh: Boolean = true) {
-        emitUiState(showLoading = isRefresh, data = articleList)
-        launch({
+        showLoading(isRefresh, articleList)
+        launch(tryBlock = {
             if (isRefresh) {
                 articleList.clear()
                 currentPage = 0
@@ -45,7 +44,7 @@ class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
                 // 第一页会同时请求置顶文章列表接口和分页文章列表的接口，使用async进行并行请求速度更快（默认是串行的）
                 // 需要加SupervisorJob()来自行处理协程
                 val job1 = async(Dispatchers.IO + SupervisorJob()) {
-                    repo.getHomeArticleList(currentPage++, PAGE_SIZE)
+                    repo.getHomeArticleList(currentPage)
                 }
                 val job2 = async(Dispatchers.IO + SupervisorJob()) {
                     repo.getHomeTopArticleList()
@@ -55,35 +54,47 @@ class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
                     val response1 = job1.await()//文章列表
                     val response2 = job2.await()//置顶文章列表
 
-                    handleRequest(response1) {
-                        handleRequest(response2) {
+                    handleRequest(response1) { resp1 ->
+                        handleRequest(response2,
+                            errorBlock = {
+                                showError(it.errorMsg)
+                                true
+                            }) {
                             (response1.data.datas as ArrayList<ArticleDTO>).addAll(
                                 0, response2.data
                             )
-                            emitUiState(
-                                data =
-                                articleList.apply { addAll(response1.data.datas) },
-                                showLoadingMore = true,
-                            )
+                            articleList.apply { addAll(response1.data.datas) }
+                            if (articleList.isEmpty()) {
+                                showEmpty(msg = "这里什么也没有")
+                            } else {
+                                currentPage++
+                                showContent(
+                                    data = articleList,
+                                    isLoadOver = resp1.data.over
+                                )
+                            }
+
+
                         }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    emitUiState(showLoading = false, error = e.message)
+                    showError(msg = e.message.toString())
                 }
             } else {
-                handleRequest(repo.getHomeArticleList(currentPage++, PAGE_SIZE)) {
+                handleRequest(repo.getHomeArticleList(currentPage),
+                    errorBlock = {
+                        showLoadMoreError(data = articleList, msg = it.errorMsg)
+                        true
+                    }) {
                     articleList.addAll(it.data.datas)
                     if (it.data.over) {
-                        emitUiState(
-                            data =
-                            articleList, showLoadingMore = false, noMoreData = true
-                        )
+                        showContent(data = articleList, isLoadOver = true)
                         return@handleRequest
                     }
                     currentPage++
+                    showContent(data = articleList, isLoadOver = false)
 
-                    emitUiState(data = articleList, showLoadingMore = true)
                 }
             }
         })

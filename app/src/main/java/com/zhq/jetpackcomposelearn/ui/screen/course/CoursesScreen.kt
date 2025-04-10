@@ -27,9 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.zhq.jetpackcomposelearn.common.BaseScreen
+import com.zhq.commonlib.base.widgets.BaseRefreshListContainer
 import com.zhq.jetpackcomposelearn.common.CenterTitleHeader
-import com.zhq.jetpackcomposelearn.common.CommonRefreshList
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import kotlinx.serialization.Serializable
 
@@ -48,15 +47,18 @@ fun CoursesScreen(
     viewModel: CourseViewModel = hiltViewModel(),
     onCourseItemClick: (ArticleDTO) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    BaseScreen(title = "教程", onBack = {navHostController.popBackStack()}) {
-        CommonRefreshList(uiState = uiState,
-            contentPadding = PaddingValues(12.dp), onRefresh = { viewModel.getCourseList(true) }) {
-            CourseItemView(item = it) { item: ArticleDTO ->
-                onCourseItemClick.invoke(item)
-            }
+    val uiPageState by viewModel.uiPageState.collectAsState()
+    BaseRefreshListContainer(
+        topAppBar = {
+            CenterTitleHeader(title = "教程", onBack = { navHostController.popBackStack() })
+        },
+        contentPadding = PaddingValues(12.dp),
+        uiPageState = uiPageState, onRefresh = { viewModel.getCourseList(true)  }) {
+        CourseItemView(item = it) { item: ArticleDTO ->
+            onCourseItemClick.invoke(item)
         }
     }
+
 }
 
 @Composable
@@ -88,7 +90,7 @@ private fun CourseItemView(
                     .clip(RoundedCornerShape(10.dp)),
                 contentScale = ContentScale.Fit
             )
-           Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {

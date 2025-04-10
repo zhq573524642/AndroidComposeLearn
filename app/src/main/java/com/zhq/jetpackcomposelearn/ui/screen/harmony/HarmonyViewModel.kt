@@ -15,7 +15,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HarmonyViewModel @Inject constructor(private val repo: HarmonyRepositoryImpl) :
-    BaseViewModel<Unit>() {
+    BaseViewModel<HarmonyDTO>() {
 
     private val _harmonyData = MutableStateFlow<HarmonyDTO?>(null)
     val harmonyData: StateFlow<HarmonyDTO?> get() = _harmonyData

@@ -1,13 +1,9 @@
 package com.zhq.jetpackcomposelearn.ui.screen.systems
 
-import android.util.Log
 import com.zhq.commonlib.base.BaseViewModel
 import com.zhq.commonlib.utils.JsonUtils
 import com.zhq.jetpackcomposelearn.base.UserManager
-import com.zhq.jetpackcomposelearn.data.ArticleDTO
-import com.zhq.jetpackcomposelearn.repo.ProjectRepositoryImp
 import com.zhq.jetpackcomposelearn.repo.SystemsRepositoryImpl
-import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
 import com.zhq.jetpackcomposelearn.ui.screen.systems.model.SystemsDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -28,12 +24,7 @@ class SystemsViewModel @Inject constructor(private val repo: SystemsRepositoryIm
         if (list?.isNotEmpty() == true) {
             systemsList.clear()
             systemsList.addAll(list)
-            emitUiState(
-                showLoading = false,
-                data = systemsList,
-                showLoadingMore = false,
-                noMoreData = false
-            )
+            showContent(data = systemsList, true)
         } else {
             getSystemsList()
         }
@@ -41,23 +32,23 @@ class SystemsViewModel @Inject constructor(private val repo: SystemsRepositoryIm
 
 
     fun getSystemsList(isRefreshing: Boolean = true) {
-        emitUiState(
-            showLoading = isRefreshing, data = systemsList,
-            showLoadingMore = false,
-            noMoreData = true
-        )
+        showLoading(isRefreshing, data = systemsList)
         launch({
             if (isRefreshing) {
                 systemsList.clear()
             }
-            handleRequest(repo.getSystemsList()) {
+            handleRequest(repo.getSystemsList(),
+                errorBlock = {
+                    showError(msg = it.errorMsg)
+                    true
+                }) {
                 UserManager.setCacheSystemsData(JsonUtils.toJson(it.data))
-                emitUiState(
-                    showLoading = false,
-                    data = systemsList.apply { addAll(it.data) },
-                    showLoadingMore = false,
-                    noMoreData = true
-                )
+                systemsList.apply { addAll(it.data) }
+                if (systemsList.isEmpty()) {
+                    showEmpty(msg = "暂无数据")
+                } else {
+                    showContent(data = systemsList, isLoadOver = true)
+                }
             }
         })
     }

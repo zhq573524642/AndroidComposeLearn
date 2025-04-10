@@ -2,7 +2,9 @@ package com.zhq.jetpackcomposelearn.ui.screen.home
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,9 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.zhq.commonlib.base.widgets.BaseRefreshListContainer
 import com.zhq.commonlib.widgets.Banner
 import com.zhq.jetpackcomposelearn.common.BigTitleHeader
-import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
 import com.zhq.jetpackcomposelearn.ui.screen.ArticleRefreshList
@@ -42,20 +44,20 @@ fun HomeScreen(
     onArticleItemClick: (ArticleDTO) -> Unit
 ) {
     val bannerData by homeViewModel.bannerList.collectAsState()
-    DynamicStatusBarScreen(
-        statusBarColor = Color(0xfff5f5f5),
-        backgroundColor = Color(0xfff5f5f5)
-    ) {
-        Column {
-            val context = LocalContext.current
+    val uiPageState by homeViewModel.uiPageState.collectAsState()
+    BaseRefreshListContainer(
+        uiPageState = uiPageState,
+        lazyListState = rememberLazyListState(),
+        contentPadding = PaddingValues(12.dp),
+        itemSpace = 12.dp,
+        topAppBar = {
             BigTitleHeader(title = "首页",
                 actions = {
                     Icon(imageVector = Icons.Default.Search, contentDescription = "搜索",
                         modifier = Modifier
                             .padding(end = 12.dp)
                             .clickable {
-//                            onSearchClick.invoke()
-                                context.startActivity(Intent(context, ImmerseTestActivity::class.java))
+                                onSearchClick.invoke()
                             })
                     Icon(imageVector = Icons.Default.Email, contentDescription = "消息",
                         modifier = Modifier
@@ -63,39 +65,32 @@ fun HomeScreen(
                                 onMessageClick.invoke()
                             })
                 })
-
-            ArticleRefreshList(
-                viewModel = homeViewModel,
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
-                lazyListState = rememberLazyListState(),
-                onRefresh = {
-                    homeViewModel.getBannerData()
-                    homeViewModel.getHomeArticleList()
-                },
-                onLoadMore = {
-                    homeViewModel.getHomeArticleList(false)
-                },
-                headerContent = {
-                    if (bannerData.isNotEmpty()) {
-                        Banner(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(top = 12.dp, bottom = 12.dp),
-                            images = bannerData.map { it.imagePath }) {
-                            onBannerItemClick(bannerData[it])
-                        }
-
-                    }
-
+        },
+        onRefresh = {
+            homeViewModel.getBannerData()
+            homeViewModel.getHomeArticleList()
+        },
+        onLoadMore = {
+            homeViewModel.getHomeArticleList(false)
+        },
+        headerContent = {
+            if (bannerData.isNotEmpty()) {
+                Banner(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(top = 12.dp, bottom = 12.dp),
+                    images = bannerData.map { it.imagePath }) {
+                    onBannerItemClick(bannerData[it])
                 }
-            ) {
-                ArticleItem(
-                    item = it,
-                    articleViewModel = homeViewModel,
-                    articleItemClick = onArticleItemClick
-                )
+
             }
-        }
+
+        }) {
+        ArticleItem(
+            item = it,
+            articleViewModel = homeViewModel,
+            articleItemClick = onArticleItemClick
+        )
     }
 
 }

@@ -26,9 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.zhq.commonlib.base.widgets.BaseRefreshListContainer
 import com.zhq.jetpackcomposelearn.common.BaseScreen
-import com.zhq.jetpackcomposelearn.common.CenterTitleHeader
-import com.zhq.jetpackcomposelearn.common.CommonRefreshList
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import kotlinx.serialization.Serializable
 
@@ -47,7 +46,8 @@ fun CourseCatalogScreen(
     viewModel: CourseCatalogViewModel = hiltViewModel(),
     onCourseCatalogItemClick: (ArticleDTO) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiPageState by viewModel.uiPageState.collectAsState()
+
     BaseScreen(title = route.title, onBack = { navHostController.popBackStack() }) {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
@@ -66,8 +66,9 @@ fun CourseCatalogScreen(
                     .fillMaxWidth(),
                 color = Color.LightGray
             )
-            CommonRefreshList(
-                uiState = uiState,
+
+            BaseRefreshListContainer(
+                uiPageState = uiPageState,
                 contentPadding = PaddingValues(12.dp),
                 itemSpace = 0.dp,
                 onRefresh = { viewModel.getCourseCatalogList(route.id, true) },

@@ -1,7 +1,5 @@
 package com.zhq.jetpackcomposelearn.ui.screen.projects
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -15,25 +13,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,15 +35,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.common.BigTitleHeader
-import com.zhq.jetpackcomposelearn.common.CommonRefreshList
 import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
-import com.zhq.jetpackcomposelearn.ext.AutoLoadMoreHandler
-import kotlin.math.log
+import com.zhq.commonlib.ext.AutoLoadMoreHandler
+import com.zhq.commonlib.widgets.CommonErrorState
+import com.zhq.commonlib.widgets.CommonLoadingState
+import com.zhq.commonlib.widgets.LoadErrorRetryView
+import com.zhq.commonlib.widgets.LoadingMoreView
+import com.zhq.commonlib.widgets.NoMoreDataView
 
 /**
  * @Author ZhangHuiQiang
@@ -119,13 +113,17 @@ fun ProjectsScreen(
                 })
             when (tabDataResult) {
                 is DataResults.Loading -> {
-                    FullScreenLoading()
+                    CommonLoadingState()
                 }
-
                 is DataResults.Refreshing -> {}
 
                 is DataResults.Error -> {
-                    FullScreenError(tabDataResult.message) { viewModel.loadTabData() }
+                    CommonErrorState(
+                        msg = tabDataResult.message
+                    ) {
+                        viewModel.loadTabData()
+                    }
+
                 }
 
                 is DataResults.Success -> {
@@ -180,12 +178,12 @@ fun ProjectsScreen(
                                 //加载更多
                                 item {
                                     when {
-                                        tabPageState.isLoadingMore -> LoadingMoreItem()
-                                        tabPageState.error != null -> ErrorRetryItem(
+                                        tabPageState.isLoadingMore -> LoadingMoreView(msg = "拼命加载中...")
+                                        tabPageState.error != null -> LoadErrorRetryView(
                                             tabPageState.error
                                         ) { viewModel.loadPagerData(page, false) }
 
-                                        tabPageState.pageData.curPage >= tabPageState.pageData.pageCount -> NoMoreDataItem()
+                                        tabPageState.pageData.curPage >= tabPageState.pageData.pageCount -> NoMoreDataView(msg = "—— 已经到底了 ——")
                                     }
                                 }
                             }
@@ -231,42 +229,5 @@ private fun FullScreenError(message: String, onRetry: () -> Unit) {
     }
 }
 
-@Composable
-private fun LoadingMoreItem() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun ErrorRetryItem(message: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "错误：$message", color = Color.Red)
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onRetry) {
-            Text("重试加载")
-        }
-    }
-}
-
-@Composable
-private fun NoMoreDataItem() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("已经到底了", color = Color.Gray)
-    }
-}
 
 

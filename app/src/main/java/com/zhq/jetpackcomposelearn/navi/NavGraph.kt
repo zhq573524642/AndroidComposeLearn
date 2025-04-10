@@ -44,7 +44,6 @@ import com.zhq.jetpackcomposelearn.ui.screen.web.WebViewScreen
 @Composable
 fun NavGraph(
     navHostController: NavHostController,
-    paddingValues: PaddingValues
 ) {
 
     NavHost(

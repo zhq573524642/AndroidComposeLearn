@@ -18,8 +18,7 @@ interface HomeRepository {
     suspend fun getBannerData():BaseResponse<List<BannerDTO>>
     suspend fun getHomeTopArticleList(): BaseResponse<List<ArticleDTO>>
     suspend fun getHomeArticleList(
-        pageIndex: Int,
-        pageSize: Int
+        pageIndex: Int
     ): BaseResponse<PageDTO<ArticleDTO>>
 }
 
@@ -33,10 +32,9 @@ class HomeRepositoryImpl @Inject constructor(private val apiService: ApiService)
     }
 
     override suspend fun getHomeArticleList(
-        pageIndex: Int,
-        pageSize: Int
+        pageIndex: Int
     ): BaseResponse<PageDTO<ArticleDTO>> {
-        return apiService.getHomeArticles(pageIndex,pageSize)
+        return apiService.getHomeArticles(pageIndex)
     }
 
 

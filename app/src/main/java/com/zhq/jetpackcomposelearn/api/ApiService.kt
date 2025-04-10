@@ -62,8 +62,7 @@ interface ApiService {
      */
     @GET("article/list/{pageIndex}/json")
     suspend fun getHomeArticles(
-        @Path("pageIndex") pageIndex: Int,
-        @Query("page_size") page_size: Int
+        @Path("pageIndex") pageIndex: Int
     ): BaseResponse<PageDTO<ArticleDTO>>
 
     /**

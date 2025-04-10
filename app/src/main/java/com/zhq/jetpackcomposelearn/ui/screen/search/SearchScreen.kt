@@ -1,8 +1,8 @@
 package com.zhq.jetpackcomposelearn.ui.screen.search
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+
+import androidx.hilt.navigation.compose.hiltViewModel
 
 /**
  * @Author ZhangHuiQiang
@@ -11,11 +11,9 @@ import androidx.compose.runtime.Composable
  */
 //@Serializable
 //object SearchScreen
-
+private const val TAG = "SearchScreen"
 @Composable
-fun SearchScreen() {
-
-    Box {
-        Text(text = "搜索")
-    }
+fun SearchScreen(
+    viewModel: SearchViewModel = hiltViewModel()
+) {
 }

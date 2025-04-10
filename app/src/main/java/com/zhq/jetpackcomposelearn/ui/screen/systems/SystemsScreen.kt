@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,13 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.zhq.commonlib.base.widgets.BaseRefreshContainer
 import com.zhq.commonlib.utils.ColorUtils
-import com.zhq.jetpackcomposelearn.common.BaseScreen
 import com.zhq.jetpackcomposelearn.common.CenterTitleHeader
-import com.zhq.jetpackcomposelearn.common.CommonRefreshLayout
-import com.zhq.jetpackcomposelearn.common.CommonRefreshList
-import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
-import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.ui.screen.systems.model.SystemsChildDTO
 import com.zhq.jetpackcomposelearn.ui.screen.systems.model.SystemsDTO
 import kotlinx.serialization.Serializable
@@ -59,16 +54,21 @@ fun SystemsScreen(
     navHostController: NavHostController,
     onSystemsItemClick: (String, Int) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    BaseScreen(title = "体系", onBack = { navHostController.popBackStack() }) {
-        CommonRefreshLayout(uiState = uiState, onRefresh = { viewModel.getSystemsList(true) },
-            layoutContent = { list: List<SystemsDTO> ->
-                FlowLayout(list = list,
-                    onSystemsItemClick = { name: String, id: Int ->
-                        onSystemsItemClick.invoke(name, id)
-                    })
-            }
-        )
+    val uiPageState by viewModel.uiPageState.collectAsState()
+    BaseRefreshContainer(
+        topAppBar = {
+            CenterTitleHeader(title = "体系", onBack = { navHostController.popBackStack() })
+        },
+        uiPageState = uiPageState,
+        isAutoRefresh = false,
+        onRefresh = {
+            viewModel.getSystemsList(true)
+        }) { list: List<SystemsDTO> ->
+        FlowLayout(list = list,
+            onSystemsItemClick = { name: String, id: Int ->
+                onSystemsItemClick.invoke(name, id)
+            })
+
     }
 }
 

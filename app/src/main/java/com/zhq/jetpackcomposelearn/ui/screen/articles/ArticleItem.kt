@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
@@ -64,9 +65,13 @@ fun ArticleItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(1f)
+                        .padding(end = 10.dp),
                     text = "${item.superChapterName}/${item.chapterName}",
                     fontSize = 12.sp,
-                    color = Color(0xff6b00ff)
+                    color = Color(0xff6b00ff),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = item.niceDate,

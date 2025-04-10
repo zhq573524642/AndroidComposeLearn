@@ -7,12 +7,14 @@ import com.zhq.jetpackcomposelearn.base.AppViewModel
 import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.data.UserDTO
 import com.zhq.jetpackcomposelearn.data.UserInfoDTO
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 /**
  * @Author ZhangHuiQiang
  * @Date 2025/4/9 14:48
  * Description
  */
+
 class MineViewModel constructor() : BaseViewModel<Unit>() {
 
     fun getUserName(): String {

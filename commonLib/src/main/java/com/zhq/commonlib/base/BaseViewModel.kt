@@ -4,14 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zhq.commonlib.data.model.BaseResponse
-import com.zhq.commonlib.data.model.UiState
+import com.zhq.commonlib.data.model.UiPageState
 import com.zhq.commonlib.utils.LogUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 /**
  * @Author ZhangHuiQiang
@@ -19,25 +18,89 @@ import kotlin.math.log
  * Description
  */
 private const val TAG = "BaseViewModel"
+
 abstract class BaseViewModel<T> : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState<T>>(UiState(true))
-    val uiState: StateFlow<UiState<T>> = _uiState
 
-    protected  fun emitUiState(
-        showLoading: Boolean = false,
-        data: T? = null,
-        error: String? = null,
+    private val _uiPageState = MutableStateFlow<UiPageState<T>>(UiPageState())
+    val uiPageState: StateFlow<UiPageState<T>> = _uiPageState
+
+    protected fun showLoading(isClearContent: Boolean = true, data: T? = null) {
+        emitUiPageState(
+            showContent = !isClearContent,
+            showLoadingPage = isClearContent,
+            showRefreshing = isClearContent,
+            data = data
+        )
+    }
+
+    protected fun showContent(data: T? = null, isLoadOver: Boolean = false) {
+        emitUiPageState(
+            showContent = true,
+            showRefreshing = false,
+            data = data,
+            showLoadingMore = !isLoadOver,
+            showNoMoreData = isLoadOver
+        )
+    }
+
+    protected fun showEmpty(msg: String = "暂无数据") {
+        emitUiPageState(
+            showEmptyPage = true,
+            msg = msg
+        )
+    }
+
+    protected fun showError(msg: String = "加载失败") {
+        emitUiPageState(
+            showErrorPage = true,
+            errorMsg = msg
+        )
+    }
+
+    protected fun showLoadMoreError(data: T? = null, msg: String = "加载失败") {
+        emitUiPageState(
+            showContent = true,
+            data = data,
+            showLoadingMore = false,
+            showLoadMoreError = true,
+            errorMsg = msg
+        )
+    }
+
+    protected fun emitUiPageState(
+        showContent: Boolean = false,
+        showLoadingPage: Boolean = false,
+        showEmptyPage: Boolean = false,
+        showErrorPage: Boolean = false,
+        showRefreshing: Boolean = false,
         showLoadingMore: Boolean = false,
-        noMoreData: Boolean = false
-    ) {
-        _uiState.value = UiState(showLoading, data, error, showLoadingMore, noMoreData)
+        showLoadMoreError: Boolean = false,
+        showNoMoreData: Boolean = false,
+        data: T? = null,
+        msg: String = "",
+        errorMsg: String = "",
+
+        ) {
+        _uiPageState.value = UiPageState(
+            showContent,
+            showLoadingPage,
+            showEmptyPage,
+            showErrorPage,
+            showRefreshing,
+            showLoadingMore,
+            showLoadMoreError,
+            showNoMoreData,
+            data,
+            msg,
+            errorMsg
+        )
     }
 
 
     fun launch(
         tryBlock: suspend CoroutineScope.() -> Unit,
-        catchBlock: suspend CoroutineScope.() -> Unit = {},
+        catchBlock: suspend CoroutineScope.(Exception) -> Boolean = { false },
         finallyBlock: suspend CoroutineScope.() -> Unit = {}
     ) {
         // 默认是执行在主线程，相当于launch(Dispatchers.Main)
@@ -46,8 +109,10 @@ abstract class BaseViewModel<T> : ViewModel() {
                 tryBlock()
             } catch (e: Exception) {
                 Log.d(TAG, "===Launch异常: ${e.message}")
-                BaseApp.baseAppViewModel.emitException(e)
-                catchBlock()
+                if (!catchBlock(e)) {
+                    BaseApp.baseAppViewModel.emitException(e)
+                }
+
             } finally {
                 finallyBlock()
             }

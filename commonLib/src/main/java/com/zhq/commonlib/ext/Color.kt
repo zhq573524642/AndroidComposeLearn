@@ -1,4 +1,4 @@
-package com.zhq.jetpackcomposelearn.ext
+package com.zhq.commonlib.ext
 
 import androidx.compose.ui.graphics.Color
 
