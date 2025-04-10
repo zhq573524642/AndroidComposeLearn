@@ -16,7 +16,7 @@ class CourseCatalogViewModel @Inject constructor(private val repo: CourseReposit
 
     fun getCourseCatalogList(cid: Int, isRefresh: Boolean) {
 
-        showLoading(isRefresh, data = articleList)
+        showLoading(isClearContent = articleList.isEmpty(), data = articleList)
 
         launch({
             if (isRefresh) {

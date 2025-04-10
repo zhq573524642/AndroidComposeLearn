@@ -20,7 +20,7 @@ import kotlin.math.log
 interface CourseRepository {
     suspend fun getCourseList(): BaseResponse<List<ArticleDTO>>
 
-    suspend fun getCourseCatalogList(pageIndex:Int,cid:Int):BaseResponse<PageDTO<ArticleDTO>>
+    suspend fun getCourseCatalogList(pageIndex: Int, cid: Int): BaseResponse<PageDTO<ArticleDTO>>
 }
 
 class CourseRepositoryImpl @Inject constructor(private val apiService: ApiService) :
@@ -39,12 +39,12 @@ class CourseRepositoryImpl @Inject constructor(private val apiService: ApiServic
         pageIndex: Int,
         cid: Int
     ): BaseResponse<PageDTO<ArticleDTO>> {
-        val data=UserManager.getCourseCatalogCacheData(cid, pageIndex)
-        if (data!=null){
+        val data = UserManager.getCourseCatalogCacheData(cid, pageIndex)
+        if (data != null) {
             return data
         }
-        val response=apiService.getCourseCatalogList(pageIndex,cid,1)
-        UserManager.setCacheCourseCatalogData(cid,pageIndex,JsonUtils.toJson(response))
+        val response = apiService.getCourseCatalogList(pageIndex, cid, 1)
+        UserManager.setCacheCourseCatalogData(cid, pageIndex, JsonUtils.toJson(response))
         return response
     }
 

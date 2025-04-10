@@ -16,20 +16,21 @@ class SystemChildViewModel @Inject constructor(private val repo: SystemsReposito
 
 
     fun getSystemChildList(cid: Int, isRefresh: Boolean) {
-        showLoading(isRefresh, data = articleList)
+        showLoading(isClearContent = articleList.isEmpty(), data = articleList)
         launch({
             if (isRefresh) {
-                currentPage = 0
                 articleList.clear()
+                currentPage = 0
 
             }
 
             if (currentPage == 0) {
-                handleRequest(repo.getSystemChildList(currentPage++, cid),
+                handleRequest(repo.getSystemChildList(currentPage, cid),
                     errorBlock = {
                         showError(msg = it.errorMsg)
                         true
                     }) {
+                    currentPage++
                     articleList.apply { addAll(it.data.datas) }
                     if (articleList.isEmpty()){
                         showEmpty()
@@ -38,7 +39,7 @@ class SystemChildViewModel @Inject constructor(private val repo: SystemsReposito
                     }
                 }
             } else {
-                handleRequest(repo.getSystemChildList(currentPage++, cid),
+                handleRequest(repo.getSystemChildList(currentPage, cid),
                     errorBlock = {
                         showLoadMoreError(data = articleList, msg = it.errorMsg)
                         true
@@ -48,7 +49,7 @@ class SystemChildViewModel @Inject constructor(private val repo: SystemsReposito
                         showContent(data = articleList, isLoadOver = true)
                         return@handleRequest
                     }
-                    currentPage++
+                    currentPage=it.data.curPage
                     showContent(data = articleList, isLoadOver = false)
                 }
             }

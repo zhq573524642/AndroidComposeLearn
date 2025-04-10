@@ -32,7 +32,7 @@ class SystemsViewModel @Inject constructor(private val repo: SystemsRepositoryIm
 
 
     fun getSystemsList(isRefreshing: Boolean = true) {
-        showLoading(isRefreshing, data = systemsList)
+        showLoading(isClearContent = systemsList.isEmpty(), data = systemsList)
         launch({
             if (isRefreshing) {
                 systemsList.clear()

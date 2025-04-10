@@ -41,6 +41,7 @@ import com.zhq.commonlib.utils.ToastUtils.showToast
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.common.CommonInputView
+import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 
 /**
  * @Author ZhangHuiQiang
@@ -96,91 +97,96 @@ fun LoginScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .background(colorResource(id = R.color.color_c9eaf9))
-            .fillMaxSize()
-    ) {
+   DynamicStatusBarScreen(
+       statusBarColor = colorResource(id = R.color.color_c9eaf9),
+       backgroundColor = colorResource(id = R.color.color_c9eaf9)
+   ) {
+       Box(
+           modifier = Modifier
+               .background(colorResource(id = R.color.color_c9eaf9))
+               .fillMaxSize()
+       ) {
 
-        Box(
-            modifier = Modifier
-                .height(50.dp)
-                .width(50.dp)
-                .clickable {
-                    when (layoutType) {
-                        LayoutType.login,
-                        LayoutType.account -> {
-                            onClosePage.invoke()
-                        }
+           Box(
+               modifier = Modifier
+                   .height(50.dp)
+                   .width(50.dp)
+                   .clickable {
+                       when (layoutType) {
+                           LayoutType.login,
+                           LayoutType.account -> {
+                               onClosePage.invoke()
+                           }
 
-                        LayoutType.register -> {
-                            if (UserManager
-                                    .getLastUserName()
-                                    .isNotEmpty()
-                            ) {
-                                layoutType = LayoutType.account
-                            } else {
-                                layoutType = LayoutType.login
-                            }
-                        }
+                           LayoutType.register -> {
+                               if (UserManager
+                                       .getLastUserName()
+                                       .isNotEmpty()
+                               ) {
+                                   layoutType = LayoutType.account
+                               } else {
+                                   layoutType = LayoutType.login
+                               }
+                           }
 
-                    }
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                modifier = Modifier
-                    .width(23.dp)
-                    .height(23.dp),
-                contentScale = ContentScale.Fit,
-                painter = painterResource(id = if (layoutType == LayoutType.login) R.drawable.ic_close_page else R.drawable.ic_back_black),
-                contentDescription = if (layoutType == LayoutType.login) "关闭" else "返回"
-            )
-        }
+                       }
+                   },
+               contentAlignment = Alignment.Center
+           ) {
+               Image(
+                   modifier = Modifier
+                       .width(23.dp)
+                       .height(23.dp),
+                   contentScale = ContentScale.Fit,
+                   painter = painterResource(id = if (layoutType == LayoutType.login) R.drawable.ic_close_page else R.drawable.ic_back_black),
+                   contentDescription = if (layoutType == LayoutType.login) "关闭" else "返回"
+               )
+           }
 
-        when (layoutType) {
-            LayoutType.login -> {
-                LoginView(
-                    onRegisterClick = {
-                        //显示注册页面
-                        layoutType = LayoutType.register
-                    },
-                ) { account, pwd ->
-                    //调用登录接口
-                    callLogin(account, pwd)
-                }
-            }
+           when (layoutType) {
+               LayoutType.login -> {
+                   LoginView(
+                       onRegisterClick = {
+                           //显示注册页面
+                           layoutType = LayoutType.register
+                       },
+                   ) { account, pwd ->
+                       //调用登录接口
+                       callLogin(account, pwd)
+                   }
+               }
 
-            LayoutType.account -> {
-                AccountView(
-                    onLastUserLogin = {
-                        //调用登录接口
-                        callLogin(
-                            UserManager.getLastUserName(),
-                            UserManager.getLastUserPassword() ?: ""
-                        )
-                    }, onNewLogin = {
-                        //显示登录页面
-                        layoutType = LayoutType.login
-                    }) {
-                    //显示注册页面
-                    layoutType = LayoutType.register
-                }
-            }
+               LayoutType.account -> {
+                   AccountView(
+                       onLastUserLogin = {
+                           //调用登录接口
+                           callLogin(
+                               UserManager.getLastUserName(),
+                               UserManager.getLastUserPassword() ?: ""
+                           )
+                       }, onNewLogin = {
+                           //显示登录页面
+                           layoutType = LayoutType.login
+                       }) {
+                       //显示注册页面
+                       layoutType = LayoutType.register
+                   }
+               }
 
-            LayoutType.register -> {
-                RegisterView { account, pwd ->
-                    //调用注册接口
-                    callRegister(account, pwd, pwd)
-                }
-            }
+               LayoutType.register -> {
+                   RegisterView { account, pwd ->
+                       //调用注册接口
+                       callRegister(account, pwd, pwd)
+                   }
+               }
 
-            else -> {
+               else -> {
 
-            }
-        }
+               }
+           }
 
-    }
+       }
+   }
 }
 
 @Composable

@@ -15,7 +15,7 @@ class CourseViewModel @Inject constructor(private val repo: CourseRepositoryImpl
     ArticleViewModel(repo) {
 
     fun getCourseList(isRefresh: Boolean) {
-        showLoading(isRefresh, data = articleList)
+        showLoading(articleList.isEmpty(), data = articleList)
 
         launch({
             handleRequest(repo.getCourseList(),

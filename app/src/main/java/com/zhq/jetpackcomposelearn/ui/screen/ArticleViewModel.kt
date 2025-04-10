@@ -15,7 +15,8 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-open class ArticleViewModel @Inject constructor(private val repo:BaseRepository) : BaseViewModel<List<ArticleDTO>>() {
+open class ArticleViewModel @Inject constructor(private val repo: BaseRepository) :
+    BaseViewModel<List<ArticleDTO>>() {
 
     /** 我收藏的文章列表中取消收藏 */
     private val _unCollectEvent = MutableStateFlow<Int?>(null)
@@ -27,6 +28,7 @@ open class ArticleViewModel @Inject constructor(private val repo:BaseRepository)
     }
 
     protected val articleList = ArrayList<ArticleDTO>()
+    protected val cacheArticleList = ArrayList<ArticleDTO>()
     protected var currentPage = 0
 
 //    protected fun getArticlePageList(

@@ -95,25 +95,23 @@ fun NavGraph(
                 onSquareClick = {
 
                 }
-            ) {item:ArticleDTO->
-                 navHostController.navigate(WebViewRoute(item.title,item.link))
+            ) { item: ArticleDTO ->
+                navHostController.navigate(WebViewRoute(item.title, item.link))
             }
         }
         //我的模块
         composable(PageRoute.Mine.name) {
-            if (UserManager.isLogin()) {
-                MineScreen(
-                    onTodoClick = {},
-                    onIntegralClick = {},
-                    onSettingClick = {
-                        navHostController.navigate(SettingRoute)
-                    }
-                )
-            } else {
-                LoginScreen(onClosePage = { navHostController.popBackStack() }) {
-                    navHostController.popBackStack()
+            MineScreen(
+                onLoginClick = {
+                    navHostController.navigate(PageRoute.LoginScreen.name)
+                },
+                onTodoClick = {},
+                onIntegralClick = {},
+                onSettingClick = {
+                    navHostController.navigate(SettingRoute)
                 }
-            }
+            )
+
         }
         //搜索
         composable(PageRoute.SearchPage.name) {
@@ -173,9 +171,9 @@ fun NavGraph(
 
         //设置
         composable<SettingRoute> { navBackStackEntry: NavBackStackEntry ->
-            val route :SettingRoute=navBackStackEntry.toRoute()
+            val route: SettingRoute = navBackStackEntry.toRoute()
             SettingScreen(navHostController = navHostController) {
-                 navHostController.navigate(PageRoute.LoginScreen.name)
+                navHostController.navigate(PageRoute.LoginScreen.name)
             }
         }
 

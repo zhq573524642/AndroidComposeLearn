@@ -33,7 +33,7 @@ class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
     }
 
     fun getHomeArticleList(isRefresh: Boolean = true) {
-        showLoading(isRefresh, articleList)
+        showLoading(articleList.isEmpty(), articleList)
         launch(tryBlock = {
             if (isRefresh) {
                 articleList.clear()
@@ -54,15 +54,15 @@ class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
                     val response1 = job1.await()//文章列表
                     val response2 = job2.await()//置顶文章列表
 
-                    handleRequest(response1) { resp1 ->
+                    handleRequest(response1) {
                         handleRequest(response2,
                             errorBlock = {
                                 showError(it.errorMsg)
                                 true
                             }) {
-                            (response1.data.datas as ArrayList<ArticleDTO>).addAll(
-                                0, response2.data
-                            )
+                            (response1.data.datas as ArrayList<ArticleDTO>).apply {
+                                addAll(0, response2.data)
+                            }
                             articleList.apply { addAll(response1.data.datas) }
                             if (articleList.isEmpty()) {
                                 showEmpty(msg = "这里什么也没有")
@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
                                 currentPage++
                                 showContent(
                                     data = articleList,
-                                    isLoadOver = resp1.data.over
+                                    isLoadOver = response1.data.over
                                 )
                             }
 

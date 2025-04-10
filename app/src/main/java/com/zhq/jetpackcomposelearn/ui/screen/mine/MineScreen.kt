@@ -49,6 +49,7 @@ import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 @Composable
 fun MineScreen(
     viewModel: MineViewModel = hiltViewModel(),
+    onLoginClick: () -> Unit,
     onTodoClick: () -> Unit,
     onIntegralClick: () -> Unit,
     onSettingClick: () -> Unit
@@ -116,7 +117,12 @@ fun MineScreen(
                     text = viewModel.getUserName(),
                     fontSize = 18.sp,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        if (!UserManager.isLogin()) {
+                            onLoginClick.invoke()
+                        }
+                    }
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -129,7 +135,11 @@ fun MineScreen(
                         modifier = Modifier.size(20.dp), contentDescription = ""
                     )
                     VerticalSpace(width = 5.dp)
-                    Text(text = viewModel.getUserCoinCount(), fontSize = 13.sp, color = Color.Yellow)
+                    Text(
+                        text = viewModel.getUserCoinCount(),
+                        fontSize = 13.sp,
+                        color = Color.Yellow
+                    )
                 }
 
             }
