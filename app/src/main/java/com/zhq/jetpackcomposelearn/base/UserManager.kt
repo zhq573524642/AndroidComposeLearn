@@ -43,7 +43,7 @@ object UserManager {
      *
      * @param user    用户
      */
-    fun saveUser(user: UserInfoDTO) {
+    fun saveUser(user: UserInfoDTO?) {
         mmkv.encode(KEY_USER, user)
     }
 

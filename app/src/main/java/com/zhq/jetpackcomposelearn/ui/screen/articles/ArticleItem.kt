@@ -2,6 +2,7 @@ package com.zhq.jetpackcomposelearn.ui.screen.articles
 
 import android.text.TextUtils
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,8 +47,8 @@ fun ArticleItem(
             articleItemClick.invoke(item)
         },
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp,
-            pressedElevation = 10.dp,
+            defaultElevation = 1.dp,
+            pressedElevation = 2.dp,
             disabledElevation = 0.dp
         ),
         modifier = Modifier
@@ -125,7 +126,11 @@ fun ArticleItem(
                     imageVector =
                     Icons.Filled.Favorite,
                     contentDescription = if (item.collect) "已收藏" else "未收藏",
-                    tint = if (item.collect) Color.Red else Color.LightGray
+                    tint = if (item.collect) Color.Red else Color.LightGray,
+                    modifier = Modifier.
+                    clickable {
+                        articleViewModel.handleCollectArticle(!item.collect,item.id)
+                    }
                 )
             }
         }

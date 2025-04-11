@@ -139,4 +139,29 @@ interface ApiService {
      */
     @GET("friend/json")
     suspend fun getCommonWebsite(): BaseResponse<List<SearchHotKeyDTO>>
+
+    /**
+     * 收藏站内文章
+     */
+    @POST("lg/collect/{id}/json")
+    suspend fun handleCollectArticle(@Path("id") id: Int): BaseResponse<Unit>
+
+    /**
+     * 取消收藏文章
+     */
+    @POST("lg/uncollect_originId/{id}/json")
+    suspend fun handleUncollectArticle(@Path("id") id: Int): BaseResponse<Unit>
+
+    /**
+     * 获取我的收藏文章列表
+     */
+    @GET("lg/collect/list/{page}/json")
+    suspend fun getMyCollectArticle(@Path("page") pageIndex: Int): BaseResponse<PageDTO<ArticleDTO>>
+
+    /**
+     * 移除我的收藏列表的文章
+     */
+    @FormUrlEncoded
+    @POST("lg/uncollect/{id}/json")
+    suspend fun handleUnCollectArticleForMine(@Path("id") id: Int, @Field("originId") originId: Int):BaseResponse<Unit>
 }

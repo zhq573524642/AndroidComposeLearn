@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zhq.commonlib.utils.ToastUtils.showCenterToast
 import com.zhq.commonlib.utils.ToastUtils.showToast
+import com.zhq.jetpackcomposelearn.App
 import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.ui.screen.course.CourseCatalogRoute
@@ -109,6 +110,9 @@ fun NavGraph(
                 onIntegralClick = {},
                 onSettingClick = {
                     navHostController.navigate(SettingRoute)
+                },
+                onMyCollectArticleItemClick = {
+                    navHostController.navigate(WebViewRoute(title = it.title, url = it.link))
                 }
             )
 
@@ -119,10 +123,12 @@ fun NavGraph(
                 onBackClick = {
                     navHostController.popBackStack()
                 }, onCommonWebsiteItemClick = {
-                navHostController.navigate(WebViewRoute(
-                    title = it.name, url = it.link
-                ))
-            })
+                    navHostController.navigate(
+                        WebViewRoute(
+                            title = it.name, url = it.link
+                        )
+                    )
+                })
         }
         //登录模块
         composable(PageRoute.LoginScreen.name) {
@@ -180,6 +186,8 @@ fun NavGraph(
         composable<SettingRoute> { navBackStackEntry: NavBackStackEntry ->
             val route: SettingRoute = navBackStackEntry.toRoute()
             SettingScreen(navHostController = navHostController) {
+                App.appViewModel.emitUser(null)
+                UserManager.saveUser(null)
                 navHostController.navigate(PageRoute.LoginScreen.name)
             }
         }

@@ -39,6 +39,7 @@ import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.common.HorizontalSpace
 import com.zhq.jetpackcomposelearn.common.VerticalSpace
+import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 
 /**
@@ -52,7 +53,8 @@ fun MineScreen(
     onLoginClick: () -> Unit,
     onTodoClick: () -> Unit,
     onIntegralClick: () -> Unit,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    onMyCollectArticleItemClick: (ArticleDTO) -> Unit,
 ) {
     val userInfo = App.appViewModel.user.collectAsState()
     DynamicStatusBarScreen(isFullScreen = true) {
@@ -153,9 +155,13 @@ fun MineScreen(
                 color = Color.White,
                 shadowElevation = 2.dp
             ) {
-
+                MintTabPager(viewModel = viewModel,
+                    onArticleItemClick = {
+                        onMyCollectArticleItemClick.invoke(it)
+                    })
             }
         }
     }
 
 }
+

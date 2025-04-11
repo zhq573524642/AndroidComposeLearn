@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.zhq.commonlib.base.widgets.BaseRefreshListContainer
 import com.zhq.commonlib.widgets.Banner
+import com.zhq.jetpackcomposelearn.App
 import com.zhq.jetpackcomposelearn.common.BigTitleHeader
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
@@ -45,6 +47,32 @@ fun HomeScreen(
 ) {
     val bannerData by homeViewModel.bannerList.collectAsState()
     val uiPageState by homeViewModel.uiPageState.collectAsState()
+
+    val collectData by App.appViewModel.collectEvent.observeAsState()
+    val user by App.appViewModel.user.collectAsState()
+
+    // 收藏事件监听
+    if (collectData != null) {
+        uiPageState.data?.forEach {
+            if (it.id == collectData!!.id) {
+                it.collect = collectData!!.collect
+            }
+        }
+    }
+    // 用户退出时，收藏应全为false，登录时获取collectIds
+    if (user == null) {
+        uiPageState.data?.forEach {
+            it.collect = false
+        }
+    } else {
+        uiPageState.data?.forEach {
+            user?.userInfo?.collectIds?.forEach { id ->
+                if (id == it.id) {
+                    it.collect = true
+                }
+            }
+        }
+    }
     BaseRefreshListContainer(
         uiPageState = uiPageState,
         lazyListState = rememberLazyListState(),
