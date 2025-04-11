@@ -115,7 +115,14 @@ fun NavGraph(
         }
         //搜索
         composable(PageRoute.SearchPage.name) {
-            SearchScreen()
+            SearchScreen(
+                onBackClick = {
+                    navHostController.popBackStack()
+                }, onCommonWebsiteItemClick = {
+                navHostController.navigate(WebViewRoute(
+                    title = it.name, url = it.link
+                ))
+            })
         }
         //登录模块
         composable(PageRoute.LoginScreen.name) {

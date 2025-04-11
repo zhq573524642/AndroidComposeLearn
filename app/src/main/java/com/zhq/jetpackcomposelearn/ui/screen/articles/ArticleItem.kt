@@ -1,12 +1,14 @@
 package com.zhq.jetpackcomposelearn.ui.screen.articles
 
 import android.text.TextUtils
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
@@ -17,7 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -61,16 +66,30 @@ fun ArticleItem(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (item.fresh) {
+                    Text(text = "新", color = Color.Red, fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(
+                            platformStyle = PlatformTextStyle(
+                                includeFontPadding = false
+                            ),
+                        ),
+                        modifier = Modifier
+                            .border(1.dp, color = Color.Red, shape = RoundedCornerShape(3.dp))
+                            .padding(top = 4.dp, bottom = 4.dp, start = 5.dp, end = 5.dp))
+                }
+
                 Text(
-                    modifier = Modifier.weight(1f)
-                        .padding(end = 10.dp),
+                    modifier = Modifier
+                        .weight(1f),
                     text = "${item.superChapterName}/${item.chapterName}",
                     fontSize = 12.sp,
                     color = Color(0xff6b00ff),
                     maxLines = 1,
+                    textAlign = TextAlign.Start,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(

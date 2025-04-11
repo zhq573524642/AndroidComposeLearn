@@ -5,6 +5,7 @@ import com.zhq.commonlib.data.model.BaseResponse
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
 import com.zhq.jetpackcomposelearn.data.PageDTO
+import com.zhq.jetpackcomposelearn.data.SearchHotKeyDTO
 import com.zhq.jetpackcomposelearn.data.UserDTO
 import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 import com.zhq.jetpackcomposelearn.ui.screen.harmony.model.HarmonyDTO
@@ -43,7 +44,7 @@ interface ApiService {
      * 获取用户信息
      */
     @GET("user/lg/userinfo/json")
-    suspend fun getUserInfo():BaseResponse<UserInfoDTO>
+    suspend fun getUserInfo(): BaseResponse<UserInfoDTO>
 
     /**
      * 获取Banner
@@ -126,4 +127,16 @@ interface ApiService {
         @Query("order_type") order_type: Int
     ):
             BaseResponse<PageDTO<ArticleDTO>>
+
+    /**
+     * 搜索热词
+     */
+    @GET("hotkey/json")
+    suspend fun getSearchHotKeys(): BaseResponse<List<SearchHotKeyDTO>>
+
+    /**
+     * 常用网站
+     */
+    @GET("friend/json")
+    suspend fun getCommonWebsite(): BaseResponse<List<SearchHotKeyDTO>>
 }
