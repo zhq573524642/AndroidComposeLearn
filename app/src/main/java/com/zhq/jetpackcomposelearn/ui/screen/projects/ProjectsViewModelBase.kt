@@ -1,17 +1,14 @@
 package com.zhq.jetpackcomposelearn.ui.screen.projects
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import com.zhq.commonlib.base.BaseViewModel
+import com.zhq.commonlib.data.model.DataResults
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
-import com.zhq.jetpackcomposelearn.data.PageDTO
 import com.zhq.jetpackcomposelearn.repo.ProjectRepositoryImp
+import com.zhq.jetpackcomposelearn.ui.screen.articles.BaseArticleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import javax.inject.Inject
-import kotlin.math.log
 
 /**
  * @Author ZhangHuiQiang
@@ -21,15 +18,12 @@ import kotlin.math.log
 private const val TAG = "ProjectsViewModel"
 
 @HiltViewModel
-class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryImp) :
-    BaseViewModel<Unit>() {
+class ProjectsViewModelBase @Inject constructor(private val repo: ProjectRepositoryImp) :
+    BaseArticleViewModel(repo) {
 
     //Tabs
     private val _tabsState = mutableStateOf<DataResults<List<ArticleDTO>>>(DataResults.Loading())
     val tabsState: State<DataResults<List<ArticleDTO>>> = _tabsState
-
-    private val _tabCount = mutableStateOf(0)
-    val tabCount: Int = _tabCount.value
 
     //选中的Index
     private val _selectedIndex = mutableStateOf(0)
@@ -65,7 +59,6 @@ class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryI
                     true
                 }) {
                 _tabsState.value = DataResults.Success(it.data)
-                _tabCount.value = it.data.size
                 loadPagerData(0, isRefresh = true)
             }
         })

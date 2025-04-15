@@ -32,10 +32,6 @@ object UserManager {
     /** 保存登录成功的用户Token */
     private const val KEY_TOKEN = "token"
 
-    private const val DATA_SYSTEMS = "data_systems"
-    private const val DATA_COURSE_LIST = "data_course_list"
-
-
     private val mmkv by lazy { MMKV.mmkvWithID(MMKV_MAP_ID) }
 
     /**
@@ -130,36 +126,5 @@ object UserManager {
         mmkv.remove(KEY_USER)
         mmkv.remove(KEY_LAST_USER_PASSWORD)
         mmkv.remove(KEY_TOKEN)
-    }
-
-    //数据
-    fun setCacheSystemsData(json: String) {
-        mmkv.encode(DATA_SYSTEMS, json)
-    }
-
-    fun getSystemsCacheData(): List<SystemsDTO>? {
-        val json = mmkv.decodeString(DATA_SYSTEMS)
-        if (json?.isEmpty() == true) return emptyList()
-        return JsonUtils.fromJson<List<SystemsDTO>>(json)
-    }
-
-    fun setCacheCourseData(json: String) {
-        mmkv.encode(DATA_COURSE_LIST, json)
-    }
-
-    fun getCourseCacheData(): BaseResponse<List<ArticleDTO>>? {
-        val json = mmkv.decodeString(DATA_COURSE_LIST)
-        if (json?.isEmpty() == true) return null
-        return JsonUtils.fromJson<BaseResponse<List<ArticleDTO>>>(json)
-    }
-
-    fun setCacheCourseCatalogData(cid: Int, pageIndex: Int, json: String) {
-        mmkv.encode("${cid}_${pageIndex}", json)
-    }
-
-    fun getCourseCatalogCacheData(cid: Int, pageIndex: Int): BaseResponse<PageDTO<ArticleDTO>>? {
-        val json = mmkv.decodeString("${cid}_${pageIndex}")
-        if (json?.isEmpty() == true) return null
-        return JsonUtils.fromJson<BaseResponse<PageDTO<ArticleDTO>>>(json)
     }
 }

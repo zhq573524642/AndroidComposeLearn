@@ -14,6 +14,9 @@ import com.zhq.commonlib.utils.ToastUtils.showToast
 import com.zhq.jetpackcomposelearn.App
 import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
+import com.zhq.jetpackcomposelearn.ui.screen.articles.ArticleRoute
+import com.zhq.jetpackcomposelearn.ui.screen.articles.ArticlesScreen
+import com.zhq.jetpackcomposelearn.ui.screen.articles.FromEnum
 import com.zhq.jetpackcomposelearn.ui.screen.course.CourseCatalogRoute
 import com.zhq.jetpackcomposelearn.ui.screen.course.CourseCatalogScreen
 import com.zhq.jetpackcomposelearn.ui.screen.course.CoursesRoute
@@ -22,6 +25,8 @@ import com.zhq.jetpackcomposelearn.ui.screen.harmony.HarmonyScreen
 import com.zhq.jetpackcomposelearn.ui.screen.home.HomeScreen
 import com.zhq.jetpackcomposelearn.ui.screen.login.LoginScreen
 import com.zhq.jetpackcomposelearn.ui.screen.main.MainScreen
+import com.zhq.jetpackcomposelearn.ui.screen.message.MessageRoute
+import com.zhq.jetpackcomposelearn.ui.screen.message.MessageScreen
 import com.zhq.jetpackcomposelearn.ui.screen.mine.MineScreen
 import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.SettingRoute
 import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.SettingScreen
@@ -62,7 +67,11 @@ fun NavGraph(
                     navHostController.navigate(PageRoute.SearchPage.name)
                 },
                 onMessageClick = {//首页消息
-                    navHostController.navigate(PageRoute.LoginScreen.name)
+                    if (UserManager.isLogin()) {
+                        navHostController.navigate(MessageRoute)
+                    } else {
+                        navHostController.navigate(PageRoute.LoginScreen.name)
+                    }
                 },
                 onBannerItemClick = {//首页Banner
 
@@ -94,7 +103,12 @@ fun NavGraph(
         composable(PageRoute.Questions.name) {
             QuestionsScreen(
                 onSquareClick = {
-
+                    navHostController.navigate(
+                        ArticleRoute(
+                            from = FromEnum.squareArticleList,
+                            title = "广场"
+                        )
+                    )
                 }
             ) { item: ArticleDTO ->
                 navHostController.navigate(WebViewRoute(item.title, item.link))
@@ -113,6 +127,21 @@ fun NavGraph(
                 },
                 onMyCollectArticleItemClick = {
                     navHostController.navigate(WebViewRoute(title = it.title, url = it.link))
+                },
+                onWebsiteItemClick = {
+                    navHostController.navigate(WebViewRoute(title = it.name, url = it.link))
+                },
+                onNavigationItemClick = {
+                    navHostController.navigate(WebViewRoute(title = it.title, url = it.link))
+                },
+                onOfficialAccountClick = {
+                    navHostController.navigate(
+                        ArticleRoute(
+                            FromEnum.officialAccountHistory,
+                            it.name,
+                            it.id
+                        )
+                    )
                 }
             )
 
@@ -122,7 +151,13 @@ fun NavGraph(
             SearchScreen(
                 onBackClick = {
                     navHostController.popBackStack()
-                }, onCommonWebsiteItemClick = {
+                },
+                onSearchResultItemClick = {
+                    navHostController.navigate(
+                        WebViewRoute(title = it.title, url = it.link)
+                    )
+                },
+                onCommonWebsiteItemClick = {
                     navHostController.navigate(
                         WebViewRoute(
                             title = it.name, url = it.link
@@ -190,6 +225,33 @@ fun NavGraph(
                 UserManager.saveUser(null)
                 navHostController.navigate(PageRoute.LoginScreen.name)
             }
+        }
+        //消息
+        composable<MessageRoute> { navBackStackEntry: NavBackStackEntry ->
+            val route: MessageRoute = navBackStackEntry.toRoute()
+            MessageScreen(navHostController = navHostController)
+        }
+
+        composable<ArticleRoute> { navBackStackEntry: NavBackStackEntry ->
+            val route: ArticleRoute = navBackStackEntry.toRoute()
+            ArticlesScreen(route = route, onScreenBack = { navHostController.popBackStack() },
+                onAuthorClick = { article: ArticleDTO, isAuthor: Boolean ->
+                     if (isAuthor){
+
+                     }else{
+                         navHostController.navigate(ArticleRoute(from = FromEnum.shareUserArticleList,
+                             title = "分享人:${article.shareUser}",
+                             id = article.userId))
+                     }
+                },
+                onArticleItemClick = { articleDTO: ArticleDTO ->
+                    navHostController.navigate(
+                        WebViewRoute(
+                            title = articleDTO.title,
+                            url = articleDTO.link
+                        )
+                    )
+                })
         }
 
 

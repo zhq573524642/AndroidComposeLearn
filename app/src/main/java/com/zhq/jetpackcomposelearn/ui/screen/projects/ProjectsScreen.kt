@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.zhq.commonlib.data.model.DataResults
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.common.BigTitleHeader
 import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
@@ -45,6 +48,7 @@ import com.zhq.commonlib.widgets.CommonLoadingState
 import com.zhq.commonlib.widgets.LoadErrorRetryView
 import com.zhq.commonlib.widgets.LoadingMoreView
 import com.zhq.commonlib.widgets.NoMoreDataView
+import com.zhq.jetpackcomposelearn.App
 
 /**
  * @Author ZhangHuiQiang
@@ -56,7 +60,7 @@ private const val TAG = "ProjectsScreen"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectsScreen(
-    viewModel: ProjectsViewModel = hiltViewModel(),
+    viewModel: ProjectsViewModelBase = hiltViewModel(),
     onSystemsClick: () -> Unit,
     onCoursesClick: () -> Unit,
     onProjectItemClick: (ArticleDTO) -> Unit
@@ -154,6 +158,31 @@ fun ProjectsScreen(
                         val tab = tabs[page]
                         val tabPageState = viewModel.getPagerState(tabId = tab.id)
                         val lazyListState = rememberLazyListState()
+                        val collectData by App.appViewModel.collectEvent.observeAsState()
+                        val user by App.appViewModel.user.collectAsState()
+
+                        // 收藏事件监听
+                        if (collectData != null) {
+                            tabPageState.pageData.datas.forEach {
+                                if (it.id == collectData!!.id) {
+                                    it.collect = collectData!!.collect
+                                }
+                            }
+                        }
+                        // 用户退出时，收藏应全为false，登录时获取collectIds
+                        if (user == null) {
+                            tabPageState.pageData.datas.forEach {
+                                it.collect = false
+                            }
+                        } else {
+                            tabPageState.pageData.datas.forEach {
+                                user?.userInfo?.collectIds?.forEach { id ->
+                                    if (id == it.id) {
+                                        it.collect = true
+                                    }
+                                }
+                            }
+                        }
                         PullToRefreshBox(isRefreshing = tabPageState.isRefreshing, onRefresh = {
                             viewModel.refreshData(page)
                         }) {
@@ -170,7 +199,8 @@ fun ProjectsScreen(
                             ) {
                                 //内容条目
                                 itemsIndexed(tabPageState.pageData.datas) { index: Int, item: ArticleDTO ->
-                                    ProjectItem(item = item) {
+                                    ProjectItem(item = item,
+                                        viewModel) {
                                         onProjectItemClick.invoke(item)
                                     }
 

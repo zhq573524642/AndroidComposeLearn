@@ -1,4 +1,4 @@
-package com.zhq.jetpackcomposelearn.ui.screen.projects
+package com.zhq.commonlib.data.model
 
 /**
  * @Author ZhangHuiQiang

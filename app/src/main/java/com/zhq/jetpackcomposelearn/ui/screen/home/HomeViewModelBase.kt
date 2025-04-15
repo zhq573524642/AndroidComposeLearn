@@ -3,7 +3,7 @@ package com.zhq.jetpackcomposelearn.ui.screen.home
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
 import com.zhq.jetpackcomposelearn.repo.HomeRepositoryImpl
-import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
+import com.zhq.jetpackcomposelearn.ui.screen.articles.BaseArticleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,11 +18,14 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
-    ArticleViewModel(repo) {
+class HomeViewModelBase @Inject constructor(private val repo: HomeRepositoryImpl) :
+    BaseArticleViewModel(repo) {
 
     private val _bannerList = MutableStateFlow<List<BannerDTO>>(emptyList())
     val bannerList: StateFlow<List<BannerDTO>> get() = _bannerList
+
+    private val _unreadCount = MutableStateFlow<Int>(0)
+    val unreadCount: StateFlow<Int> get() = _unreadCount
 
     fun getBannerData() {
         launch({
@@ -96,6 +99,14 @@ class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
                     showContent(data = articleList, isLoadOver = false)
 
                 }
+            }
+        })
+    }
+
+    fun getUnreadMsgCount() {
+        launch({
+            handleRequest(repo.getUnreadMsgCount()) {
+                _unreadCount.value = it.data
             }
         })
     }

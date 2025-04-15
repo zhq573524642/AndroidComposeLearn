@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,6 +40,7 @@ import com.zhq.jetpackcomposelearn.data.ArticleDTO
 @Composable
 fun ProjectItem(
     item: ArticleDTO,
+    viewModel: ProjectsViewModelBase,
     onItemClick: (ArticleDTO) -> Unit
 ) {
     Surface(
@@ -99,8 +99,12 @@ fun ProjectItem(
                         Text(text = item.niceDate, color = Color.LightGray, fontSize = 12.sp)
                     }
                     Icon(
+                        tint = if (item.collect) Color.Red else Color.LightGray,
                         imageVector = if (item.collect) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = if (item.collect) "已收藏" else "未收藏"
+                        contentDescription = if (item.collect) "已收藏" else "未收藏",
+                        modifier = Modifier.clickable {
+                            viewModel.handleCollectArticle(!item.collect,item.id)
+                        }
                     )
                 }
             }

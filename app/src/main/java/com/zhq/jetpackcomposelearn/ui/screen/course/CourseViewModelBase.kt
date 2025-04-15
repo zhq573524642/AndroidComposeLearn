@@ -1,7 +1,7 @@
 package com.zhq.jetpackcomposelearn.ui.screen.course
 
 import com.zhq.jetpackcomposelearn.repo.CourseRepositoryImpl
-import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
+import com.zhq.jetpackcomposelearn.ui.screen.articles.BaseArticleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -11,8 +11,8 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-class CourseViewModel @Inject constructor(private val repo: CourseRepositoryImpl) :
-    ArticleViewModel(repo) {
+class CourseViewModelBase @Inject constructor(private val repo: CourseRepositoryImpl) :
+    BaseArticleViewModel(repo) {
 
     fun getCourseList(isRefresh: Boolean) {
         showLoading(articleList.isEmpty(), data = articleList)

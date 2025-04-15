@@ -20,6 +20,8 @@ interface HomeRepository {
     suspend fun getHomeArticleList(
         pageIndex: Int
     ): BaseResponse<PageDTO<ArticleDTO>>
+
+    suspend fun getUnreadMsgCount():BaseResponse<Int>
 }
 
 class HomeRepositoryImpl @Inject constructor(private val apiService: ApiService) : BaseRepository(apiService),HomeRepository {
@@ -35,6 +37,10 @@ class HomeRepositoryImpl @Inject constructor(private val apiService: ApiService)
         pageIndex: Int
     ): BaseResponse<PageDTO<ArticleDTO>> {
         return apiService.getHomeArticles(pageIndex)
+    }
+
+    override suspend fun getUnreadMsgCount(): BaseResponse<Int> {
+        return apiService.getUnreadCount()
     }
 
 

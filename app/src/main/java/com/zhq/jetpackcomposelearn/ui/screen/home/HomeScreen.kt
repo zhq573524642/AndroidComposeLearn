@@ -1,17 +1,17 @@
 package com.zhq.jetpackcomposelearn.ui.screen.home
 
-import android.content.Intent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,18 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.zhq.commonlib.base.widgets.BaseRefreshListContainer
 import com.zhq.commonlib.widgets.Banner
 import com.zhq.jetpackcomposelearn.App
+import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.common.BigTitleHeader
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
-import com.zhq.jetpackcomposelearn.ui.screen.ArticleRefreshList
 import com.zhq.jetpackcomposelearn.ui.screen.articles.ArticleItem
-import com.zhq.jetpackcomposelearn.ui.screen.note.immerse.ImmerseTestActivity
 
 /**
  * @Author ZhangHuiQiang
@@ -39,13 +38,14 @@ import com.zhq.jetpackcomposelearn.ui.screen.note.immerse.ImmerseTestActivity
  */
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModelBase = hiltViewModel(),
     onSearchClick: () -> Unit,
     onMessageClick: () -> Unit,
     onBannerItemClick: (BannerDTO) -> Unit = {},
     onArticleItemClick: (ArticleDTO) -> Unit
 ) {
     val bannerData by homeViewModel.bannerList.collectAsState()
+    val unreadMsgCount by homeViewModel.unreadCount.collectAsState()
     val uiPageState by homeViewModel.uiPageState.collectAsState()
 
     val collectData by App.appViewModel.collectEvent.observeAsState()
@@ -87,14 +87,42 @@ fun HomeScreen(
                             .clickable {
                                 onSearchClick.invoke()
                             })
-                    Icon(imageVector = Icons.Default.Email, contentDescription = "消息",
-                        modifier = Modifier
-                            .clickable {
-                                onMessageClick.invoke()
-                            })
+                    if (unreadMsgCount > 0) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = Color.Red,
+                                    contentColor = Color.White
+                                ) {
+                                    Text(
+                                        text = "$unreadMsgCount",
+                                        fontSize = 10.sp,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+
+                        ) {
+                            Icon(imageVector = Icons.Default.Email, contentDescription = "消息",
+                                modifier = Modifier
+                                    .clickable {
+                                        onMessageClick.invoke()
+                                    })
+                        }
+                    } else {
+                        Icon(imageVector = Icons.Default.Email, contentDescription = "消息",
+                            modifier = Modifier
+                                .clickable {
+                                    onMessageClick.invoke()
+                                })
+                    }
+
                 })
         },
         onRefresh = {
+            if (UserManager.isLogin()) {
+                homeViewModel.getUnreadMsgCount()
+            }
             homeViewModel.getBannerData()
             homeViewModel.getHomeArticleList()
         },
@@ -116,8 +144,8 @@ fun HomeScreen(
         }) {
         ArticleItem(
             item = it,
-            articleViewModel = homeViewModel,
-            articleItemClick = onArticleItemClick
+            baseArticleViewModel = homeViewModel,
+            onArticleItemClick = onArticleItemClick
         )
     }
 

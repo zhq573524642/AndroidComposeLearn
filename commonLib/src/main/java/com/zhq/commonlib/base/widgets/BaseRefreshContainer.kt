@@ -58,13 +58,6 @@ fun <T : ProvideItemKeys> BaseRefreshContainer(
         color = statusColor,
         darkIcons = if (isFullScreen) false else statusBarColor.isLightColor()
     )
-
-    LaunchedEffect(true) {
-        if (isAutoRefresh && uiPageState?.data == null) {
-            onRefresh?.invoke()
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,34 +67,14 @@ fun <T : ProvideItemKeys> BaseRefreshContainer(
             //解决状态来手势冲突
             .then(if (isFullScreen) Modifier.systemGestureExclusion() else Modifier)
     ) {
-        //显示AppBar
-        topAppBar?.invoke()
 
-        PullToRefreshBox(
-            modifier = modifier.fillMaxWidth(),
-            isRefreshing = uiPageState?.showRefreshing ?: false,
-            onRefresh = {
-                onRefresh?.invoke()
-            }) {
-
-            if (uiPageState?.showLoadingPage == true) {//显示页面加载
-                CommonLoadingState()
-            } else if (uiPageState?.showEmptyPage == true
-                && !uiPageState.showRefreshing
-                && (uiPageState.data == null)
-            ) {//显示空数据页面
-                CommonEmptyState(msg = uiPageState.msg)
-            } else if (uiPageState?.showErrorPage == true) {//显示异常错误页面
-                CommonErrorState(msg = uiPageState.errorMsg) {
-                    onRefresh?.invoke()
-                }
-            } else {
-                uiPageState?.data?.let {
-                    content.invoke(it)
-                }
-            }
-
+        BaseUiStatePage(
+            modifier = modifier,
+            uiPageState = uiPageState,
+            isAutoRefresh = isAutoRefresh,
+            onRefresh = { onRefresh?.invoke() },
+            topAppBar = { topAppBar?.invoke() }) {
+            content.invoke(it)
         }
-
     }
 }

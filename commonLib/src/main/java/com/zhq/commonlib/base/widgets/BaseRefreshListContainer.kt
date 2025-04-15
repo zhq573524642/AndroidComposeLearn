@@ -38,6 +38,7 @@ fun <T : ProvideItemKeys> BaseRefreshListContainer(
     onRefresh: (() -> Unit)?,//刷新回调
     onLoadMore: (() -> Unit)? = null,//加载回调
     topAppBar: @Composable (() -> Unit)? = null,//AppBar
+    isHeaderScrollWithList: Boolean = true,//Header是否和列表一起滚动
     headerContent: @Composable (() -> Unit)? = null,//内容页面Header
     lazyListState: LazyListState = rememberLazyListState(),
     itemSpace: Dp = 12.dp,//条目间距
@@ -65,7 +66,7 @@ fun <T : ProvideItemKeys> BaseRefreshListContainer(
             //解决状态来手势冲突
             .then(if (isFullScreen) Modifier.systemGestureExclusion() else Modifier)
     ) {
-        BaseUiStatePage(
+        BaseUiStateListPage(
             modifier = modifier,
             uiPageState = uiPageState,
             lazyListState = lazyListState,
@@ -79,6 +80,7 @@ fun <T : ProvideItemKeys> BaseRefreshListContainer(
             topAppBar = {
                 topAppBar?.invoke()
             },
+            isHeaderScrollWithList = isHeaderScrollWithList,
             headerContent = {
                 headerContent?.invoke()
             }) {

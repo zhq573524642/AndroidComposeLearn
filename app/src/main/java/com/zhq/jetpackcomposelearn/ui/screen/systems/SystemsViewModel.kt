@@ -2,6 +2,7 @@ package com.zhq.jetpackcomposelearn.ui.screen.systems
 
 import com.zhq.commonlib.base.BaseViewModel
 import com.zhq.commonlib.utils.JsonUtils
+import com.zhq.jetpackcomposelearn.base.AppCacheManager
 import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.repo.SystemsRepositoryImpl
 import com.zhq.jetpackcomposelearn.ui.screen.systems.model.SystemsDTO
@@ -20,7 +21,7 @@ class SystemsViewModel @Inject constructor(private val repo: SystemsRepositoryIm
     val systemsList = ArrayList<SystemsDTO>()
 
     init {
-        val list: List<SystemsDTO>? = UserManager.getSystemsCacheData()
+        val list: List<SystemsDTO>? = AppCacheManager.getSystemsCacheData()
         if (list?.isNotEmpty() == true) {
             systemsList.clear()
             systemsList.addAll(list)
@@ -42,7 +43,7 @@ class SystemsViewModel @Inject constructor(private val repo: SystemsRepositoryIm
                     showError(msg = it.errorMsg)
                     true
                 }) {
-                UserManager.setCacheSystemsData(JsonUtils.toJson(it.data))
+                AppCacheManager.setCacheSystemsData(JsonUtils.toJson(it.data))
                 systemsList.apply { addAll(it.data) }
                 if (systemsList.isEmpty()) {
                     showEmpty(msg = "暂无数据")

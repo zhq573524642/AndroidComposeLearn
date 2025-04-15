@@ -4,8 +4,12 @@ import android.graphics.pdf.PdfDocument.Page
 import com.zhq.commonlib.data.model.BaseResponse
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
+import com.zhq.jetpackcomposelearn.data.MessageDTO
+import com.zhq.jetpackcomposelearn.data.NavigationsDTO
+import com.zhq.jetpackcomposelearn.data.OfficialAccountDTO
 import com.zhq.jetpackcomposelearn.data.PageDTO
 import com.zhq.jetpackcomposelearn.data.SearchHotKeyDTO
+import com.zhq.jetpackcomposelearn.data.ShareUserDTO
 import com.zhq.jetpackcomposelearn.data.UserDTO
 import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 import com.zhq.jetpackcomposelearn.ui.screen.harmony.model.HarmonyDTO
@@ -163,5 +167,83 @@ interface ApiService {
      */
     @FormUrlEncoded
     @POST("lg/uncollect/{id}/json")
-    suspend fun handleUnCollectArticleForMine(@Path("id") id: Int, @Field("originId") originId: Int):BaseResponse<Unit>
+    suspend fun handleUnCollectArticleForMine(
+        @Path("id") id: Int,
+        @Field("originId") originId: Int
+    ): BaseResponse<Unit>
+
+    /**
+     * 收藏网站列表
+     */
+    @GET("lg/collect/usertools/json")
+    suspend fun getCollectWebsiteList(): BaseResponse<List<ArticleDTO>>
+
+    /**
+     * 删除收藏网站
+     */
+    @FormUrlEncoded
+    @POST("lg/collect/deletetool/json")
+    suspend fun deleteCollectWebsite(@Field("id") id: Int): BaseResponse<Unit>
+
+    /**
+     * 获取导航数据
+     */
+    @GET("navi/json")
+    suspend fun getNavigationData(): BaseResponse<List<NavigationsDTO>>
+
+    /**
+     * 搜索
+     */
+    @FormUrlEncoded
+    @POST("article/query/{page}/json")
+    suspend fun search(
+        @Path("page") pageIndex: Int,
+        @Field("k") key: String
+    ): BaseResponse<PageDTO<ArticleDTO>>
+
+    /**
+     * 消息-已读
+     */
+    @GET("message/lg/readed_list/{page}/json")
+    suspend fun getReadMessage(@Path("page") pageIndex: Int): BaseResponse<PageDTO<MessageDTO>>
+
+    /**
+     * 消息-未读
+     */
+    @GET("message/lg/unread_list/{page}/json")
+    suspend fun getUnreadMessage(@Path("page") pageIndex: Int): BaseResponse<PageDTO<MessageDTO>>
+
+    /**
+     * 未读消息数量
+     */
+    @GET("message/lg/count_unread/json")
+    suspend fun getUnreadCount(): BaseResponse<Int>
+
+    /**
+     * 获取公众号列表
+     */
+    @GET("wxarticle/chapters/json")
+    suspend fun getOfficialAccountsList(): BaseResponse<List<OfficialAccountDTO>>
+
+    /**
+     * 查看某个公众号的历史数据
+     */
+    @GET("wxarticle/list/{id}/{page}/json")
+    suspend fun getArticleForOfficialAccount(
+        @Path("id") id: Int,
+        @Path("page") pageIndex: Int
+    ): BaseResponse<PageDTO<ArticleDTO>>
+
+    /**
+     * 广场列表数据
+     */
+    @GET("user_article/list/{page}/json")
+    suspend fun getSquareArticleList(@Path("page") pageIndex: Int): BaseResponse<PageDTO<ArticleDTO>>
+
+    /**
+     * 分享人对应列表数据
+     */
+    @GET("user/{id}/share_articles/{page}/json")
+    suspend fun getArticleListForShareUser(@Path("page") pageIndex: Int, @Path("id") id: Int):
+            BaseResponse<ShareUserDTO>
 }

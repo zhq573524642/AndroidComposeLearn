@@ -1,33 +1,32 @@
-package com.zhq.jetpackcomposelearn.ui.screen.systems
+package com.zhq.jetpackcomposelearn.ui.screen.course
 
-import com.zhq.jetpackcomposelearn.repo.SystemsRepositoryImpl
-import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
+import com.zhq.jetpackcomposelearn.repo.CourseRepositoryImpl
+import com.zhq.jetpackcomposelearn.ui.screen.articles.BaseArticleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 /**
  * @Author ZhangHuiQiang
- * @Date 2025/4/8 13:57
+ * @Date 2025/4/8 15:09
  * Description
  */
 @HiltViewModel
-class SystemChildViewModel @Inject constructor(private val repo: SystemsRepositoryImpl) :
-    ArticleViewModel(repo) {
+class CourseCatalogViewModelBase @Inject constructor(private val repo: CourseRepositoryImpl) :
+    BaseArticleViewModel(repo) {
 
+    fun getCourseCatalogList(cid: Int, isRefresh: Boolean) {
 
-    fun getSystemChildList(cid: Int, isRefresh: Boolean) {
         showLoading(isClearContent = articleList.isEmpty(), data = articleList)
+
         launch({
             if (isRefresh) {
                 articleList.clear()
                 currentPage = 0
-
             }
-
             if (currentPage == 0) {
-                handleRequest(repo.getSystemChildList(currentPage, cid),
+                handleRequest(repo.getCourseCatalogList(currentPage, cid),
                     errorBlock = {
-                        showError(msg = it.errorMsg)
+                        showError(it.errorMsg)
                         true
                     }) {
                     currentPage++
@@ -39,7 +38,7 @@ class SystemChildViewModel @Inject constructor(private val repo: SystemsReposito
                     }
                 }
             } else {
-                handleRequest(repo.getSystemChildList(currentPage, cid),
+                handleRequest(repo.getCourseCatalogList(currentPage, cid),
                     errorBlock = {
                         showLoadMoreError(data = articleList, msg = it.errorMsg)
                         true
@@ -49,10 +48,12 @@ class SystemChildViewModel @Inject constructor(private val repo: SystemsReposito
                         showContent(data = articleList, isLoadOver = true)
                         return@handleRequest
                     }
-                    currentPage=it.data.curPage
+                    currentPage = it.data.curPage
+
                     showContent(data = articleList, isLoadOver = false)
                 }
             }
+
         })
     }
 }

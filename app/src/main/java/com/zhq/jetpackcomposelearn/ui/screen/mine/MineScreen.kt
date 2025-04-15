@@ -31,8 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.zhq.jetpackcomposelearn.App
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.base.UserManager
@@ -40,7 +38,7 @@ import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.common.HorizontalSpace
 import com.zhq.jetpackcomposelearn.common.VerticalSpace
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
-import com.zhq.jetpackcomposelearn.data.UserInfoDTO
+import com.zhq.jetpackcomposelearn.data.OfficialAccountDTO
 
 /**
  * @Author ZhangHuiQiang
@@ -49,12 +47,16 @@ import com.zhq.jetpackcomposelearn.data.UserInfoDTO
  */
 @Composable
 fun MineScreen(
-    viewModel: MineViewModel = hiltViewModel(),
+    viewModel: MineViewModelBase = hiltViewModel(),
     onLoginClick: () -> Unit,
     onTodoClick: () -> Unit,
     onIntegralClick: () -> Unit,
     onSettingClick: () -> Unit,
     onMyCollectArticleItemClick: (ArticleDTO) -> Unit,
+    onWebsiteItemClick: (ArticleDTO) -> Unit,
+    onNavigationItemClick: (ArticleDTO) -> Unit,
+    onOfficialAccountClick: (OfficialAccountDTO) -> Unit
+
 ) {
     val userInfo = App.appViewModel.user.collectAsState()
     DynamicStatusBarScreen(isFullScreen = true) {
@@ -155,9 +157,18 @@ fun MineScreen(
                 color = Color.White,
                 shadowElevation = 2.dp
             ) {
-                MintTabPager(viewModel = viewModel,
+                MintTabPager(
                     onArticleItemClick = {
                         onMyCollectArticleItemClick.invoke(it)
+                    },
+                    onWebsiteItemClick = {
+                        onWebsiteItemClick.invoke(it)
+                    },
+                    onNavigationItemClick = {
+                        onNavigationItemClick.invoke(it)
+                    },
+                    onOfficialAccountClick = {
+                        onOfficialAccountClick.invoke(it)
                     })
             }
         }

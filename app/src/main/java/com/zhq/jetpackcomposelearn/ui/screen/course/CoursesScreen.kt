@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,7 +43,7 @@ data object CoursesRoute
 fun CoursesScreen(
     route: CoursesRoute,
     navHostController: NavHostController,
-    viewModel: CourseViewModel = hiltViewModel(),
+    viewModel: CourseViewModelBase = hiltViewModel(),
     onCourseItemClick: (ArticleDTO) -> Unit
 ) {
     val uiPageState by viewModel.uiPageState.collectAsState()

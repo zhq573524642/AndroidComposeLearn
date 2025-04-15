@@ -1,4 +1,4 @@
-package com.zhq.jetpackcomposelearn.ui.screen
+package com.zhq.jetpackcomposelearn.ui.screen.articles
 
 
 import com.zhq.commonlib.base.BaseViewModel
@@ -18,11 +18,11 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-open class ArticleViewModel @Inject constructor(private val repo: BaseRepository) :
+open class BaseArticleViewModel @Inject constructor(private val repo: BaseRepository) :
     BaseViewModel<List<ArticleDTO>>() {
 
     /** 我收藏的文章列表中取消收藏 */
-    private val _unCollectEvent = MutableStateFlow<Int?>(null)
+    protected val _unCollectEvent = MutableStateFlow<Int?>(null)
     val unCollectEvent: StateFlow<Int?> = _unCollectEvent
 
     companion object {
@@ -31,8 +31,8 @@ open class ArticleViewModel @Inject constructor(private val repo: BaseRepository
     }
 
     protected val articleList = ArrayList<ArticleDTO>()
-    protected val cacheArticleList = ArrayList<ArticleDTO>()
     protected var currentPage = 0
+    protected val cacheArticleList = ArrayList<ArticleDTO>()
 
     fun handleCollectArticle(
         isCollect: Boolean,
@@ -85,6 +85,8 @@ open class ArticleViewModel @Inject constructor(private val repo: BaseRepository
             }
         })
     }
+
+
 
 
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import com.zhq.commonlib.data.model.BaseResponse
 import com.zhq.commonlib.utils.JsonUtils
 import com.zhq.jetpackcomposelearn.api.ApiService
+import com.zhq.jetpackcomposelearn.base.AppCacheManager
 import com.zhq.jetpackcomposelearn.base.BaseRepository
 import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
@@ -26,12 +27,12 @@ interface CourseRepository {
 class CourseRepositoryImpl @Inject constructor(private val apiService: ApiService) :
     BaseRepository(apiService), CourseRepository {
     override suspend fun getCourseList(): BaseResponse<List<ArticleDTO>> {
-        val data: BaseResponse<List<ArticleDTO>>? = UserManager.getCourseCacheData()
+        val data: BaseResponse<List<ArticleDTO>>? = AppCacheManager.getCourseCacheData()
         if (data != null) {
             return data
         }
         val response = apiService.getCourseList()
-        UserManager.setCacheCourseData(JsonUtils.toJson(response))
+        AppCacheManager.setCacheCourseData(JsonUtils.toJson(response))
         return response
     }
 
@@ -39,12 +40,12 @@ class CourseRepositoryImpl @Inject constructor(private val apiService: ApiServic
         pageIndex: Int,
         cid: Int
     ): BaseResponse<PageDTO<ArticleDTO>> {
-        val data = UserManager.getCourseCatalogCacheData(cid, pageIndex)
+        val data = AppCacheManager.getCourseCatalogCacheData(cid, pageIndex)
         if (data != null) {
             return data
         }
         val response = apiService.getCourseCatalogList(pageIndex, cid, 1)
-        UserManager.setCacheCourseCatalogData(cid, pageIndex, JsonUtils.toJson(response))
+        AppCacheManager.setCacheCourseCatalogData(cid, pageIndex, JsonUtils.toJson(response))
         return response
     }
 

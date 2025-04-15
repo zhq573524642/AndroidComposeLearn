@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
-import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
 
 /**
  * @Author ZhangHuiQiang
@@ -39,12 +38,13 @@ import com.zhq.jetpackcomposelearn.ui.screen.ArticleViewModel
 @Composable
 fun ArticleItem(
     item: ArticleDTO,
-    articleViewModel: ArticleViewModel,
-    articleItemClick: (ArticleDTO) -> Unit
+    baseArticleViewModel: BaseArticleViewModel,
+    onAuthorClick: ((ArticleDTO, Boolean) -> Unit)? = null,
+    onArticleItemClick: (ArticleDTO) -> Unit
 ) {
     Card(
         onClick = {
-            articleItemClick.invoke(item)
+            onArticleItemClick.invoke(item)
         },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 1.dp,
@@ -71,7 +71,8 @@ fun ArticleItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (item.fresh) {
-                    Text(text = "新", color = Color.Red, fontSize = 12.sp,
+                    Text(
+                        text = "新", color = Color.Red, fontSize = 12.sp,
                         textAlign = TextAlign.Center,
                         style = TextStyle(
                             platformStyle = PlatformTextStyle(
@@ -80,7 +81,8 @@ fun ArticleItem(
                         ),
                         modifier = Modifier
                             .border(1.dp, color = Color.Red, shape = RoundedCornerShape(3.dp))
-                            .padding(top = 4.dp, bottom = 4.dp, start = 5.dp, end = 5.dp))
+                            .padding(top = 4.dp, bottom = 4.dp, start = 5.dp, end = 5.dp)
+                    )
                 }
 
                 Text(
@@ -120,16 +122,17 @@ fun ArticleItem(
                     color = Color.DarkGray,
                     fontSize = 13.sp,
                     textDecoration = TextDecoration.Underline,
-
-                    )
+                    modifier = Modifier.clickable {
+                        onAuthorClick?.invoke(item, TextUtils.isEmpty(item.shareUser))
+                    }
+                )
                 androidx.compose.material3.Icon(
                     imageVector =
                     Icons.Filled.Favorite,
                     contentDescription = if (item.collect) "已收藏" else "未收藏",
                     tint = if (item.collect) Color.Red else Color.LightGray,
-                    modifier = Modifier.
-                    clickable {
-                        articleViewModel.handleCollectArticle(!item.collect,item.id)
+                    modifier = Modifier.clickable {
+                        baseArticleViewModel.handleCollectArticle(!item.collect, item.id)
                     }
                 )
             }

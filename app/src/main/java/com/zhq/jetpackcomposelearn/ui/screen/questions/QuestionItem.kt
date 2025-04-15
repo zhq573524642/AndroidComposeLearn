@@ -2,7 +2,6 @@ package com.zhq.jetpackcomposelearn.ui.screen.questions
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
@@ -41,7 +39,8 @@ import com.zhq.jetpackcomposelearn.data.TagDTO
 @Composable
 fun QuestionItem(
     data: ArticleDTO,
-    onQuestionItemClick:(ArticleDTO)->Unit
+    viewModel: QuestionsViewModelBase,
+    onQuestionItemClick: (ArticleDTO) -> Unit
 ) {
 
     Surface(
@@ -109,7 +108,11 @@ fun QuestionItem(
                     imageVector =
                     Icons.Filled.Favorite,
                     contentDescription = if (data.collect) "已收藏" else "未收藏",
-                    tint = if (data.collect) Color.Red else Color.LightGray
+                    tint = if (data.collect) Color.Red else Color.LightGray,
+                    modifier = Modifier
+                        .clickable {
+                            viewModel.handleCollectArticle(!data.collect, data.id)
+                        }
                 )
             }
         }

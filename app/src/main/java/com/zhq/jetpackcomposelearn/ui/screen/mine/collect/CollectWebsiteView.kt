@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.zhq.commonlib.base.widgets.BaseUiStateListPage
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.common.CommonRemindDialog
+import com.zhq.jetpackcomposelearn.common.HorizontalSpace
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 
 /**
@@ -42,19 +43,16 @@ import com.zhq.jetpackcomposelearn.data.ArticleDTO
 private const val TAG = "CollectArticleView"
 
 @Composable
-fun CollectArticleView(
-    viewModel: CollectBaseArticleViewModel= hiltViewModel(),
-    onArticleItemClick: (ArticleDTO) -> Unit
+fun CollectWebsiteView(
+    viewModel: CollectWebsiteViewModelBase = hiltViewModel(),
+    onWebsiteItemClick: (ArticleDTO) -> Unit
 ) {
     val uiPageState by viewModel.uiPageState.collectAsState()
     val unCollectEvent by viewModel.unCollectEvent.collectAsState()
     var dialogOpen by remember {
         mutableStateOf(false)
     }
-    var articleId by remember {
-        mutableStateOf(0)
-    }
-    var originId by remember {
+    var websiteId by remember {
         mutableStateOf(0)
     }
     // 我收藏的文章列表中取消收藏
@@ -67,32 +65,27 @@ fun CollectArticleView(
         uiPageState = uiPageState,
         contentPadding = PaddingValues(12.dp),
         itemSpace = 12.dp,
-        onRefresh = { viewModel.getMyCollectArticle(true) },
-        onLoadMore = {
-            viewModel.getMyCollectArticle(false)
-        }) { item: ArticleDTO ->
-        CollectArticleItem(
+        onRefresh = { viewModel.getMyCollectWebsite(true) }) { item: ArticleDTO ->
+        CollectWebsiteItem(
             modifier = Modifier
                 .fillMaxWidth()
-                .animateItem(), item = item,
-            onUnCollectArticle = {
-                articleId = it.id
-                originId = it.originId
+                .animateItem(),
+            item = item,
+            onUnCollectWebsite = {
+                websiteId = it.id
                 dialogOpen = true
-            }) {
-            onArticleItemClick.invoke(it)
+            }
+        ) {
+            onWebsiteItemClick.invoke(it)
         }
         if (dialogOpen) {
             CommonRemindDialog(msg = "是否取消收藏？",
                 onDialogDismiss = { dialogOpen = false },
                 onCancelCallback = { dialogOpen = false }) {
                 dialogOpen = false
-                viewModel.handleCollectArticleForMine(
-                    isCollect = false,
-                    id = articleId,
-                    originId = originId
-                ) {
-                }
+                viewModel.deleteCollectWebsite(
+                    id = websiteId
+                )
             }
         }
     }
@@ -102,15 +95,15 @@ fun CollectArticleView(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun CollectArticleItem(
+private fun CollectWebsiteItem(
     modifier: Modifier = Modifier,
     item: ArticleDTO,
-    onUnCollectArticle: (ArticleDTO) -> Unit,
-    onArticleItemClick: (ArticleDTO) -> Unit
+    onUnCollectWebsite: (ArticleDTO) -> Unit,
+    onWebsiteItemClick: (ArticleDTO) -> Unit
 ) {
     Card(
         onClick = {
-            onArticleItemClick.invoke(item)
+            onWebsiteItemClick.invoke(item)
         },
         backgroundColor = Color.White,
         shape = RoundedCornerShape(10.dp),
@@ -129,31 +122,22 @@ private fun CollectArticleItem(
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = "分类：${if (item.chapterName.isNotEmpty()) item.chapterName else "--"}",
-                    color = Color.DarkGray, fontSize = 12.sp
-                )
-                Text(
-                    text = item.title,
+                    text = item.name,
                     fontSize = 14.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "作者：${item.author}", color = Color.DarkGray, fontSize = 12.sp)
-                    Text(
-                        text = "收藏时间：${item.niceDate}",
-                        color = Color.DarkGray,
-                        fontSize = 12.sp
-                    )
-                }
+                HorizontalSpace(height = 10.dp)
+                Text(
+                    text = item.link,
+                    fontSize = 13.sp,
+                    color = Color.Blue,
+                    maxLines = 2
+                )
             }
 
             Row(
@@ -171,7 +155,7 @@ private fun CollectArticleItem(
                         .size(18.dp)
                         .clickable {
                             //取消收藏
-                            onUnCollectArticle.invoke(item)
+                            onUnCollectWebsite.invoke(item)
                         },
                     tint = Color.Red,
                     painter = painterResource(id = R.drawable.ic_remove_collect),
