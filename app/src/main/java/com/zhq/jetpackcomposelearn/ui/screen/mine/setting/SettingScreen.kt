@@ -3,10 +3,13 @@ package com.zhq.jetpackcomposelearn.ui.screen.mine.setting
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,7 +32,9 @@ data object SettingRoute
 @Composable
 fun SettingScreen(
     navHostController: NavHostController,
-    onLogoutClick:()->Unit
+    onToolsClick: () -> Unit,
+    onGoogleMavenClick:()->Unit,
+    onLogoutClick: () -> Unit
 ) {
 
     BaseScreen(title = "设置", onBack = { navHostController.popBackStack() }) {
@@ -37,15 +42,40 @@ fun SettingScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            OutlinedButton(
+                modifier = Modifier.padding(
+                    start = 20.dp,
+                    top = 10.dp,
+                    bottom = 10.dp,
+                    end = 20.dp
+                ).fillMaxWidth(), onClick = {
+                    onToolsClick.invoke()
+                }) {
+                Text(text = "工具")
+            }
+            OutlinedButton(
+                modifier = Modifier.padding(
+                    start = 20.dp,
+                    top = 10.dp,
+                    bottom = 10.dp,
+                    end = 20.dp
+                ).fillMaxWidth(), onClick = {
+                    onGoogleMavenClick.invoke()
+                }) {
+                Text(text = "Google Maven 仓库快速查询")
+            }
             Spacer(
                 modifier = Modifier
                     .width(10.dp)
                     .weight(1f)
             )
 
-            Button(onClick = {
-                onLogoutClick.invoke()
-            },
+            Button(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth(), onClick = {
+                    onLogoutClick.invoke()
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Purple40)
             ) {
                 Text(text = "退出登录")

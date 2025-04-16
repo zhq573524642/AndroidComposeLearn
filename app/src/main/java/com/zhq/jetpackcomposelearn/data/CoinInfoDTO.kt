@@ -1,6 +1,7 @@
 package com.zhq.jetpackcomposelearn.data
 
 import android.os.Parcelable
+import com.zhq.commonlib.ext.ProvideItemKeys
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -16,4 +17,8 @@ data class CoinInfoDTO(
     val rank:Int=-1,
     val userId:String="",
     val username:String=""
-):Parcelable
+):ProvideItemKeys,Parcelable {
+    override fun provideKey(): Int {
+        return userId.toInt()
+    }
+}

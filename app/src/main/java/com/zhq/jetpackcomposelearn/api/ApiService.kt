@@ -4,12 +4,16 @@ import android.graphics.pdf.PdfDocument.Page
 import com.zhq.commonlib.data.model.BaseResponse
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 import com.zhq.jetpackcomposelearn.data.BannerDTO
+import com.zhq.jetpackcomposelearn.data.CoinInfoDTO
+import com.zhq.jetpackcomposelearn.data.GetCoinDTO
+import com.zhq.jetpackcomposelearn.data.GoogleMavenDTO
 import com.zhq.jetpackcomposelearn.data.MessageDTO
 import com.zhq.jetpackcomposelearn.data.NavigationsDTO
 import com.zhq.jetpackcomposelearn.data.OfficialAccountDTO
 import com.zhq.jetpackcomposelearn.data.PageDTO
 import com.zhq.jetpackcomposelearn.data.SearchHotKeyDTO
 import com.zhq.jetpackcomposelearn.data.ShareUserDTO
+import com.zhq.jetpackcomposelearn.data.ToolsDTO
 import com.zhq.jetpackcomposelearn.data.UserDTO
 import com.zhq.jetpackcomposelearn.data.UserInfoDTO
 import com.zhq.jetpackcomposelearn.ui.screen.harmony.model.HarmonyDTO
@@ -324,4 +328,40 @@ interface ApiService {
      */
     @POST("lg/user_article/delete/{id}/json")
     suspend fun deleteShareArticle(@Path("id") id: Int): BaseResponse<Unit>
+
+    /**
+     * 获取自己的积分信息
+     */
+    @GET("lg/coin/userinfo/json")
+    suspend fun getMyCoinInfo(): BaseResponse<CoinInfoDTO>
+
+    /**
+     * 获取积分排行榜列表
+     */
+    @GET("coin/rank/{page}/json")
+    suspend fun getCoinRankList(@Path("page") pageIndex: Int): BaseResponse<PageDTO<CoinInfoDTO>>
+
+    /**
+     * 积分获取记录
+     */
+    @GET("lg/coin/list/{page}/json")
+    suspend fun getGetCoinRecordList(@Path("page") pageIndex: Int): BaseResponse<PageDTO<GetCoinDTO>>
+
+    /**
+     * 获取工具列表
+     */
+    @GET("tools/list/json")
+    suspend fun getToolsList(): BaseResponse<List<ToolsDTO>>
+
+    /**
+     * Google Maven获取所有包名
+     */
+    @GET("maven_pom/package/json")
+    suspend fun getGoogleMavenAllPackageName(): BaseResponse<List<String>>
+
+    /**
+     * 查询包名
+     */
+    @GET("maven_pom/search/json")
+    suspend fun queryGoogleMavenPackageName(@Query("k") key: String): BaseResponse<List<GoogleMavenDTO>>
 }

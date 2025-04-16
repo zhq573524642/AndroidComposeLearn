@@ -14,9 +14,14 @@ import com.zhq.commonlib.utils.ToastUtils.showToast
 import com.zhq.jetpackcomposelearn.App
 import com.zhq.jetpackcomposelearn.base.UserManager
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
+import com.zhq.jetpackcomposelearn.data.ToolsDTO
 import com.zhq.jetpackcomposelearn.ui.screen.articles.ArticleRoute
 import com.zhq.jetpackcomposelearn.ui.screen.articles.ArticlesScreen
 import com.zhq.jetpackcomposelearn.ui.screen.articles.FromEnum
+import com.zhq.jetpackcomposelearn.ui.screen.mine.coin.CoinRoute
+import com.zhq.jetpackcomposelearn.ui.screen.mine.coin.CoinScreen
+import com.zhq.jetpackcomposelearn.ui.screen.mine.coin.GetCoinRoute
+import com.zhq.jetpackcomposelearn.ui.screen.mine.coin.MyGetCoinScreen
 import com.zhq.jetpackcomposelearn.ui.screen.course.CourseCatalogRoute
 import com.zhq.jetpackcomposelearn.ui.screen.course.CourseCatalogScreen
 import com.zhq.jetpackcomposelearn.ui.screen.course.CoursesRoute
@@ -28,8 +33,14 @@ import com.zhq.jetpackcomposelearn.ui.screen.main.MainScreen
 import com.zhq.jetpackcomposelearn.ui.screen.message.MessageRoute
 import com.zhq.jetpackcomposelearn.ui.screen.message.MessageScreen
 import com.zhq.jetpackcomposelearn.ui.screen.mine.MineScreen
+import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.ArtifactRoute
+import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.ArtifactScreen
+import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.GoogleMavenPackageRoute
+import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.GoogleMavenScreen
 import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.SettingRoute
 import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.SettingScreen
+import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.ToolsRoute
+import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.ToolsScreen
 import com.zhq.jetpackcomposelearn.ui.screen.projects.ProjectsScreen
 import com.zhq.jetpackcomposelearn.ui.screen.questions.QuestionsScreen
 import com.zhq.jetpackcomposelearn.ui.screen.search.SearchScreen
@@ -148,7 +159,9 @@ fun NavGraph(
                     )
                 },
                 onTodoClick = {},
-                onIntegralClick = {},
+                onIntegralClick = {
+                    navHostController.navigate(CoinRoute)
+                },
                 onSettingClick = {
                     navHostController.navigate(SettingRoute)
                 },
@@ -267,7 +280,13 @@ fun NavGraph(
         //设置
         composable<SettingRoute> { navBackStackEntry: NavBackStackEntry ->
             val route: SettingRoute = navBackStackEntry.toRoute()
-            SettingScreen(navHostController = navHostController) {
+            SettingScreen(navHostController = navHostController,
+                onToolsClick = {
+                    navHostController.navigate(ToolsRoute)
+                },
+                onGoogleMavenClick = {
+                    navHostController.navigate(GoogleMavenPackageRoute)
+                }) {
                 App.appViewModel.emitUser(null)
                 UserManager.saveUser(null)
                 navHostController.navigate(PageRoute.LoginScreen.name)
@@ -308,6 +327,48 @@ fun NavGraph(
                             url = articleDTO.link
                         )
                     )
+                })
+        }
+
+        composable<CoinRoute> { navBackStackEntry: NavBackStackEntry ->
+            val route: CoinRoute = navBackStackEntry.toRoute()
+            CoinScreen(
+                onBackClick = {
+                    navHostController.popBackStack()
+                }
+            ) {
+                navHostController.navigate(GetCoinRoute)
+            }
+        }
+        composable<GetCoinRoute> { navBackStackEntry: NavBackStackEntry ->
+            MyGetCoinScreen(
+                onBackClick = {
+                    navHostController.popBackStack()
+                }
+            )
+        }
+
+        composable<ToolsRoute> { navBackStackEntry: NavBackStackEntry ->
+            ToolsScreen(
+                onBackClick = {
+                    navHostController.popBackStack()
+                }
+            ) { item: ToolsDTO ->
+                navHostController.navigate(WebViewRoute(title = item.name, url = item.link))
+            }
+        }
+
+        composable<GoogleMavenPackageRoute> {
+            GoogleMavenScreen(onBackClick = { navHostController.popBackStack() }) { item: String ->
+                navHostController.navigate(ArtifactRoute(key = item))
+            }
+        }
+
+        composable<ArtifactRoute> { navBackStackEntry: NavBackStackEntry ->
+            val route: ArtifactRoute = navBackStackEntry.toRoute()
+            ArtifactScreen(route = route,
+                onBackClick = {
+                    navHostController.popBackStack()
                 })
         }
 
