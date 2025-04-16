@@ -173,6 +173,29 @@ interface ApiService {
     ): BaseResponse<Unit>
 
     /**
+     * 收藏站外文章
+     */
+    @FormUrlEncoded
+    @POST("lg/collect/add/json")
+    suspend fun handleCollectArticleForExternal(
+        @Field("title") title: String,
+        @Field("author") author: String,
+        @Field("link") link: String
+    ): BaseResponse<Unit>
+
+    /**
+     * 编辑收藏的文章
+     */
+    @FormUrlEncoded
+    @POST("lg/collect/user_article/update/{articleId}/json")
+    suspend fun handleEditCollectedArticle(
+        @Path("articleId") articleId: Int,
+        @Field("title") title: String,
+        @Field("author") author: String,
+        @Field("link") link: String
+    ): BaseResponse<Unit>
+
+    /**
      * 收藏网站列表
      */
     @GET("lg/collect/usertools/json")
@@ -184,6 +207,27 @@ interface ApiService {
     @FormUrlEncoded
     @POST("lg/collect/deletetool/json")
     suspend fun deleteCollectWebsite(@Field("id") id: Int): BaseResponse<Unit>
+
+    /**
+     * 收藏网站
+     */
+    @FormUrlEncoded
+    @POST("lg/collect/addtool/json")
+    suspend fun handleCollectWebsite(
+        @Field("name") name: String,
+        @Field("link") link: String
+    ): BaseResponse<Unit>
+
+    /**
+     * 编辑收藏的网站
+     */
+    @FormUrlEncoded
+    @POST("lg/collect/updatetool/json")
+    suspend fun handleEditWebsite(
+        @Field("id") id: Int,
+        @Field("name") name: String,
+        @Field("link") link: String
+    ): BaseResponse<Unit>
 
     /**
      * 获取导航数据
@@ -246,4 +290,38 @@ interface ApiService {
     @GET("user/{id}/share_articles/{page}/json")
     suspend fun getArticleListForShareUser(@Path("page") pageIndex: Int, @Path("id") id: Int):
             BaseResponse<ShareUserDTO>
+
+    /**
+     * 按照作者昵称搜索文章
+     */
+    @GET("article/list/{page}/json")
+    suspend fun getArticleListForAuthor(
+        @Path("page") pageIndex: Int,
+        @Query("author") author: String
+    ): BaseResponse<PageDTO<ArticleDTO>>
+
+
+    /**
+     * 我的分享列表
+     */
+    @GET("user/lg/private_articles/{page}/json")
+    suspend fun getArticleListForMyself(@Path("page") pageIndex: Int):
+            BaseResponse<ShareUserDTO>
+
+    /**
+     * 分享文章
+     */
+    @FormUrlEncoded
+    @POST("lg/user_article/add/json")
+    suspend fun postShareArticle(
+        @Field("title") title: String,
+        @Field("author") author: String,
+        @Field("link") link: String
+    ): BaseResponse<Unit>
+
+    /**
+     * 删除自己分享的文章
+     */
+    @POST("lg/user_article/delete/{id}/json")
+    suspend fun deleteShareArticle(@Path("id") id: Int): BaseResponse<Unit>
 }

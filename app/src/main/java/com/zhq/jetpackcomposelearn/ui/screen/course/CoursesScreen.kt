@@ -43,7 +43,7 @@ data object CoursesRoute
 fun CoursesScreen(
     route: CoursesRoute,
     navHostController: NavHostController,
-    viewModel: CourseViewModelBase = hiltViewModel(),
+    viewModel: CourseViewModel = hiltViewModel(),
     onCourseItemClick: (ArticleDTO) -> Unit
 ) {
     val uiPageState by viewModel.uiPageState.collectAsState()

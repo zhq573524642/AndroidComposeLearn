@@ -18,7 +18,7 @@ import javax.inject.Inject
 private const val TAG = "QuestionsViewModel"
 
 @HiltViewModel
-class QuestionsViewModelBase @Inject constructor(private val repo: QuestionsRepositoryImpl) :
+class QuestionsViewModel @Inject constructor(private val repo: QuestionsRepositoryImpl) :
     BaseArticleViewModel(repo) {
 
     fun getQuestionsList(): Flow<PagingData<ArticleDTO>> {

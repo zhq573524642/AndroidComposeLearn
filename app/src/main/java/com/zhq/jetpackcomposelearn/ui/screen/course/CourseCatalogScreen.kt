@@ -42,7 +42,7 @@ data class CourseCatalogRoute(val title: String, val id: Int)
 fun CourseCatalogScreen(
     route: CourseCatalogRoute,
     navHostController: NavHostController,
-    viewModel: CourseCatalogViewModelBase = hiltViewModel(),
+    viewModel: CourseCatalogViewModel = hiltViewModel(),
     onCourseCatalogItemClick: (ArticleDTO) -> Unit
 ) {
     val uiPageState by viewModel.uiPageState.collectAsState()

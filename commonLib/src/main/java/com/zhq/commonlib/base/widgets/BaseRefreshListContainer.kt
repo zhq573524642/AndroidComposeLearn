@@ -1,15 +1,23 @@
 package com.zhq.commonlib.base.widgets
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.systemGestureExclusion
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -45,6 +53,8 @@ fun <T : ProvideItemKeys> BaseRefreshListContainer(
     contentPadding: PaddingValues = PaddingValues(0.dp),//列表四周的间距
     loadMoreMsg: String = "拼命加载中..",
     noMoreDataMsg: String = "—— 已经到底了 ——",
+    isShowFloatButton: Boolean = false,
+    onFloatButtonClick: (() -> Unit)? = null,
     itemContent: @Composable (T) -> Unit//列表条目
 ) {
 
@@ -66,25 +76,36 @@ fun <T : ProvideItemKeys> BaseRefreshListContainer(
             //解决状态来手势冲突
             .then(if (isFullScreen) Modifier.systemGestureExclusion() else Modifier)
     ) {
-        BaseUiStateListPage(
-            modifier = modifier,
-            uiPageState = uiPageState,
-            lazyListState = lazyListState,
-            itemSpace = itemSpace,
-            contentPadding = contentPadding,
-            onRefresh = { onRefresh?.invoke() },
-            onLoadMore = { onLoadMore?.invoke() },
-            isAutoRefresh = isAutoRefresh,
-            loadMoreMsg = loadMoreMsg,
-            noMoreDataMsg = noMoreDataMsg,
-            topAppBar = {
-                topAppBar?.invoke()
-            },
-            isHeaderScrollWithList = isHeaderScrollWithList,
-            headerContent = {
-                headerContent?.invoke()
-            }) {
-            itemContent.invoke(it)
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+        ) {
+            BaseUiStateListPage(
+                modifier = modifier,
+                uiPageState = uiPageState,
+                lazyListState = lazyListState,
+                itemSpace = itemSpace,
+                contentPadding = contentPadding,
+                onRefresh = { onRefresh?.invoke() },
+                onLoadMore = { onLoadMore?.invoke() },
+                isAutoRefresh = isAutoRefresh,
+                loadMoreMsg = loadMoreMsg,
+                noMoreDataMsg = noMoreDataMsg,
+                topAppBar = {
+                    topAppBar?.invoke()
+                },
+                isHeaderScrollWithList = isHeaderScrollWithList,
+                isShowFloatButton = isShowFloatButton,
+                onFloatButtonClick = {
+                    onFloatButtonClick?.invoke()
+                },
+                headerContent = {
+                    headerContent?.invoke()
+                }) {
+                itemContent.invoke(it)
+            }
+
+
         }
     }
 }

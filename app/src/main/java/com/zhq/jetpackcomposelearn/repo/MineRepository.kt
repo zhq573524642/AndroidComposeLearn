@@ -19,7 +19,24 @@ import javax.inject.Inject
 interface MineRepository {
     suspend fun getMyCollectArticle(page: Int): BaseResponse<PageDTO<ArticleDTO>>
 
+    suspend fun postCollectArticleForExternal(
+        title: String,
+        author: String,
+        link: String
+    ): BaseResponse<Unit>
+
+    suspend fun handleEditCollectedArticle(
+        articleId: Int,
+        title: String,
+        author: String,
+        link: String
+    ): BaseResponse<Unit>
+
     suspend fun getMyCollectWebsite(): BaseResponse<List<ArticleDTO>>
+
+    suspend fun handleCollectWebsite(name: String, link: String): BaseResponse<Unit>
+
+    suspend fun handleEditWebsite(id: Int, name: String, link: String): BaseResponse<Unit>
 
     suspend fun deleteCollectWebsite(id: Int): BaseResponse<Unit>
 
@@ -34,8 +51,37 @@ class MineRepositoryImpl @Inject constructor(private val apiService: ApiService)
         return apiService.getMyCollectArticle(page)
     }
 
+    override suspend fun postCollectArticleForExternal(
+        title: String,
+        author: String,
+        link: String
+    ): BaseResponse<Unit> {
+        return apiService.handleCollectArticleForExternal(title, author, link)
+    }
+
+    override suspend fun handleEditCollectedArticle(
+        articleId: Int,
+        title: String,
+        author: String,
+        link: String
+    ): BaseResponse<Unit> {
+        return apiService.handleEditCollectedArticle(articleId, title, author, link)
+    }
+
     override suspend fun getMyCollectWebsite(): BaseResponse<List<ArticleDTO>> {
         return apiService.getCollectWebsiteList()
+    }
+
+    override suspend fun handleCollectWebsite(name: String, link: String): BaseResponse<Unit> {
+        return apiService.handleCollectWebsite(name, link)
+    }
+
+    override suspend fun handleEditWebsite(
+        id: Int,
+        name: String,
+        link: String
+    ): BaseResponse<Unit> {
+        return apiService.handleEditWebsite(id, name, link)
     }
 
     override suspend fun deleteCollectWebsite(id: Int): BaseResponse<Unit> {

@@ -47,8 +47,9 @@ import com.zhq.jetpackcomposelearn.data.OfficialAccountDTO
  */
 @Composable
 fun MineScreen(
-    viewModel: MineViewModelBase = hiltViewModel(),
+    viewModel: MineViewModel = hiltViewModel(),
     onLoginClick: () -> Unit,
+    onMyShare: () -> Unit,
     onTodoClick: () -> Unit,
     onIntegralClick: () -> Unit,
     onSettingClick: () -> Unit,
@@ -82,6 +83,13 @@ fun MineScreen(
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
+                    Image(
+                        modifier = Modifier
+                            .size(25.dp)
+                            .clickable { onMyShare.invoke() },
+                        painter = painterResource(id = R.drawable.ic_share_article),
+                        contentDescription = "我的分享"
+                    )
                     Image(
                         modifier = Modifier
                             .size(25.dp)

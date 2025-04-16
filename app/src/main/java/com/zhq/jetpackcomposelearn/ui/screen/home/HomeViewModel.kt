@@ -18,7 +18,7 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-class HomeViewModelBase @Inject constructor(private val repo: HomeRepositoryImpl) :
+class HomeViewModel @Inject constructor(private val repo: HomeRepositoryImpl) :
     BaseArticleViewModel(repo) {
 
     private val _bannerList = MutableStateFlow<List<BannerDTO>>(emptyList())

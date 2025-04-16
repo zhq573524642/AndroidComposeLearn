@@ -16,7 +16,7 @@ import javax.inject.Inject
  */
 
 @HiltViewModel
-class SearchViewModelBase @Inject constructor(private val repo: SearchRepositoryImpl) :
+class SearchViewModel @Inject constructor(private val repo: SearchRepositoryImpl) :
     BaseArticleViewModel(repo) {
     private val _hotKeyList = MutableStateFlow<List<SearchHotKeyDTO>>(emptyList())
 

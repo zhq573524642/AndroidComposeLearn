@@ -40,7 +40,7 @@ import com.zhq.jetpackcomposelearn.data.ArticleDTO
 @Composable
 fun ProjectItem(
     item: ArticleDTO,
-    viewModel: ProjectsViewModelBase,
+    viewModel: ProjectsViewModel,
     onItemClick: (ArticleDTO) -> Unit
 ) {
     Surface(

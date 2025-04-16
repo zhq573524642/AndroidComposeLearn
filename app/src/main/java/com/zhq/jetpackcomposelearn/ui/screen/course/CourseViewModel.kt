@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-class CourseViewModelBase @Inject constructor(private val repo: CourseRepositoryImpl) :
+class CourseViewModel @Inject constructor(private val repo: CourseRepositoryImpl) :
     BaseArticleViewModel(repo) {
 
     fun getCourseList(isRefresh: Boolean) {

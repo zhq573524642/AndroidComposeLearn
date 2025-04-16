@@ -40,7 +40,7 @@ data class ArticleDTO(
     var zan: Int,
     var name: String,
     var children: List<ArticleDTO>,
-    var cover: String
+    var cover: String=""
 ) : ProvideItemKeys {
     override fun provideKey(): Int {
         return id

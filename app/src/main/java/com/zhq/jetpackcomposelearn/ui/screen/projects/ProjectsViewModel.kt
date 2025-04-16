@@ -18,7 +18,7 @@ import javax.inject.Inject
 private const val TAG = "ProjectsViewModel"
 
 @HiltViewModel
-class ProjectsViewModelBase @Inject constructor(private val repo: ProjectRepositoryImp) :
+class ProjectsViewModel @Inject constructor(private val repo: ProjectRepositoryImp) :
     BaseArticleViewModel(repo) {
 
     //Tabs

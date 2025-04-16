@@ -1,5 +1,7 @@
 package com.zhq.jetpackcomposelearn.ui.screen.mine.collect
 
+import com.zhq.commonlib.utils.ToastUtils.showToast
+import com.zhq.jetpackcomposelearn.data.ArticleEditDTO
 import com.zhq.jetpackcomposelearn.repo.MineRepositoryImpl
 import com.zhq.jetpackcomposelearn.ui.screen.articles.BaseArticleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,8 +13,8 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-class CollectBaseArticleViewModel @Inject constructor(private val repo:MineRepositoryImpl) :
-    BaseArticleViewModel(repo){
+class CollectArticleViewModel @Inject constructor(private val repo: MineRepositoryImpl) :
+    BaseArticleViewModel(repo) {
 
     fun getMyCollectArticle(isRefresh: Boolean = true) {
         showLoading(isRefresh, data = articleList)
@@ -40,16 +42,40 @@ class CollectBaseArticleViewModel @Inject constructor(private val repo:MineRepos
                     errorBlock = {
                         showLoadMoreError(data = articleList)
                         true
-                    }){
+                    }) {
                     articleList.apply { addAll(it.data.datas) }
-                    if (it.data.over){
+                    if (it.data.over) {
                         showContent(data = articleList, isLoadOver = true)
                         return@handleRequest
                     }
-                    showContent(data = articleList,false)
+                    showContent(data = articleList, false)
                 }
             }
 
+        })
+    }
+
+    fun postCollectArticleForExternal(
+        title: String,
+        author: String,
+        link: String,
+        onSuccess: () -> Unit
+    ) {
+        launch({
+            handleRequest(repo.postCollectArticleForExternal(title, author, link)) {
+                "收藏成功".showToast()
+                onSuccess.invoke()
+            }
+        })
+    }
+
+    fun handleEditCollectedArticle(articleId: Int, title: String, author: String, link: String) {
+        launch({
+            handleRequest(repo.handleEditCollectedArticle(articleId, title, author, link)) {
+                "编辑成功".showToast()
+                _editEvent.value =
+                    ArticleEditDTO(id = articleId, title = title, author = author, link = link)
+            }
         })
     }
 }

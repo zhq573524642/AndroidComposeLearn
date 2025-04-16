@@ -1,5 +1,6 @@
 package com.zhq.jetpackcomposelearn.ui.screen.mine.collect
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import com.zhq.commonlib.base.widgets.BaseUiStateListPage
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.common.CommonRemindDialog
 import com.zhq.jetpackcomposelearn.common.HorizontalSpace
+import com.zhq.jetpackcomposelearn.common.ShareDialog
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 
 /**
@@ -44,33 +46,67 @@ private const val TAG = "CollectArticleView"
 
 @Composable
 fun CollectWebsiteView(
-    viewModel: CollectWebsiteViewModelBase = hiltViewModel(),
+    viewModel: CollectWebsiteViewModel = hiltViewModel(),
     onWebsiteItemClick: (ArticleDTO) -> Unit
 ) {
     val uiPageState by viewModel.uiPageState.collectAsState()
     val unCollectEvent by viewModel.unCollectEvent.collectAsState()
+    val editEvent by viewModel.editEvent.collectAsState()
     var dialogOpen by remember {
+        mutableStateOf(false)
+    }
+    var dialogCollectWebSite by remember {
+        mutableStateOf(false)
+    }
+
+    var dialogEditWebsite by remember {
         mutableStateOf(false)
     }
     var websiteId by remember {
         mutableStateOf(0)
     }
+    var websiteName by remember {
+        mutableStateOf("")
+    }
+
+    var websiteLink by remember {
+        mutableStateOf("")
+    }
+
     // 我收藏的文章列表中取消收藏
     if (unCollectEvent != null) {
         uiPageState.data = uiPageState.data?.filter {
             it.id != unCollectEvent
         }
     }
+    if (editEvent != null) {
+        uiPageState.data?.forEach {
+            if (it.id == editEvent!!.id) {
+                it.name = editEvent!!.title
+                it.link = editEvent!!.link
+            }
+        }
+    }
     BaseUiStateListPage(
         uiPageState = uiPageState,
         contentPadding = PaddingValues(12.dp),
         itemSpace = 12.dp,
-        onRefresh = { viewModel.getMyCollectWebsite(true) }) { item: ArticleDTO ->
+        onRefresh = { viewModel.getMyCollectWebsite(true) },
+        isShowFloatButton = true,
+        onFloatButtonClick = {
+            dialogCollectWebSite = true
+        }) { item: ArticleDTO ->
         CollectWebsiteItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateItem(),
             item = item,
+            onEditWebsite = {
+                websiteId = it.id
+                websiteName = it.name
+                websiteLink = it.link
+                dialogEditWebsite = true
+            },
             onUnCollectWebsite = {
                 websiteId = it.id
                 dialogOpen = true
@@ -78,15 +114,39 @@ fun CollectWebsiteView(
         ) {
             onWebsiteItemClick.invoke(it)
         }
-        if (dialogOpen) {
-            CommonRemindDialog(msg = "是否取消收藏？",
-                onDialogDismiss = { dialogOpen = false },
-                onCancelCallback = { dialogOpen = false }) {
-                dialogOpen = false
-                viewModel.deleteCollectWebsite(
-                    id = websiteId
-                )
+    }
+
+    if (dialogOpen) {
+        CommonRemindDialog(msg = "是否取消收藏？",
+            onDialogDismiss = { dialogOpen = false },
+            onCancelCallback = { dialogOpen = false }) {
+            dialogOpen = false
+            viewModel.deleteCollectWebsite(
+                id = websiteId
+            )
+        }
+    }
+    if (dialogCollectWebSite) {
+        ShareDialog(title = "收藏网站", onDismissRequest = {
+            dialogCollectWebSite = false
+        }) { title: String, author: String, link: String ->
+            dialogCollectWebSite = false
+            viewModel.handleCollectWebsite(title, link) {
+                viewModel.getMyCollectWebsite(true)
             }
+        }
+    }
+
+    if (dialogEditWebsite) {
+        ShareDialog(
+            title = "编辑收藏",
+            name = websiteName,
+            link = websiteLink,
+            onDismissRequest = {
+                dialogEditWebsite = false
+            }) { title: String, author: String, link: String ->
+            dialogEditWebsite = false
+            viewModel.handleEditWebsite(websiteId, title, link)
         }
     }
 
@@ -98,6 +158,7 @@ fun CollectWebsiteView(
 private fun CollectWebsiteItem(
     modifier: Modifier = Modifier,
     item: ArticleDTO,
+    onEditWebsite: (ArticleDTO) -> Unit,
     onUnCollectWebsite: (ArticleDTO) -> Unit,
     onWebsiteItemClick: (ArticleDTO) -> Unit
 ) {
@@ -145,7 +206,12 @@ private fun CollectWebsiteItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier
+                        .size(18.dp)
+                        .clickable {
+                            //编辑
+                            onEditWebsite.invoke(item)
+                        },
                     tint = Color.Green,
                     painter = painterResource(id = R.drawable.ic_edit_collect),
                     contentDescription = "编辑收藏"

@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.zhq.commonlib.base.widgets.BaseUiStateListPage
 import com.zhq.jetpackcomposelearn.R
 import com.zhq.jetpackcomposelearn.common.CommonRemindDialog
+import com.zhq.jetpackcomposelearn.common.ShareDialog
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 
 /**
@@ -43,16 +44,32 @@ private const val TAG = "CollectArticleView"
 
 @Composable
 fun CollectArticleView(
-    viewModel: CollectBaseArticleViewModel= hiltViewModel(),
+    viewModel: CollectArticleViewModel = hiltViewModel(),
     onArticleItemClick: (ArticleDTO) -> Unit
 ) {
     val uiPageState by viewModel.uiPageState.collectAsState()
     val unCollectEvent by viewModel.unCollectEvent.collectAsState()
+    val editEvent by viewModel.editEvent.collectAsState()
     var dialogOpen by remember {
+        mutableStateOf(false)
+    }
+    var dialogCollect by remember {
+        mutableStateOf(false)
+    }
+    var dialogEdit by remember {
         mutableStateOf(false)
     }
     var articleId by remember {
         mutableStateOf(0)
+    }
+    var articleTitle by remember {
+        mutableStateOf("")
+    }
+    var articleAuthor by remember {
+        mutableStateOf("")
+    }
+    var articleLink by remember {
+        mutableStateOf("")
     }
     var originId by remember {
         mutableStateOf(0)
@@ -63,6 +80,16 @@ fun CollectArticleView(
             it.id != unCollectEvent
         }
     }
+    //编辑文章 更新列表
+    if (editEvent != null) {
+        uiPageState.data?.forEach {
+            if (it.id == editEvent!!.id) {
+                it.title = editEvent!!.title
+                it.author = editEvent!!.author
+                it.link = editEvent!!.link
+            }
+        }
+    }
     BaseUiStateListPage(
         uiPageState = uiPageState,
         contentPadding = PaddingValues(12.dp),
@@ -70,11 +97,22 @@ fun CollectArticleView(
         onRefresh = { viewModel.getMyCollectArticle(true) },
         onLoadMore = {
             viewModel.getMyCollectArticle(false)
+        },
+        isShowFloatButton = true,
+        onFloatButtonClick = {
+            dialogCollect = true
         }) { item: ArticleDTO ->
         CollectArticleItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateItem(), item = item,
+            onEditCollectedArticle = {
+                articleId = it.id
+                articleTitle = it.title
+                articleLink = it.author
+                articleLink = it.link
+                dialogEdit = true
+            },
             onUnCollectArticle = {
                 articleId = it.id
                 originId = it.originId
@@ -82,18 +120,46 @@ fun CollectArticleView(
             }) {
             onArticleItemClick.invoke(it)
         }
-        if (dialogOpen) {
-            CommonRemindDialog(msg = "是否取消收藏？",
-                onDialogDismiss = { dialogOpen = false },
-                onCancelCallback = { dialogOpen = false }) {
-                dialogOpen = false
-                viewModel.handleCollectArticleForMine(
-                    isCollect = false,
-                    id = articleId,
-                    originId = originId
-                ) {
-                }
+
+    }
+
+    //删除收藏提示
+    if (dialogOpen) {
+        CommonRemindDialog(msg = "是否取消收藏？",
+            onDialogDismiss = { dialogOpen = false },
+            onCancelCallback = { dialogOpen = false }) {
+            dialogOpen = false
+            viewModel.handleCollectArticleForMine(
+                isCollect = false,
+                id = articleId,
+                originId = originId
+            ) {
             }
+        }
+    }
+
+    //收藏文章弹窗
+    if (dialogCollect) {
+        ShareDialog(title = "收藏文章", onDismissRequest = {
+            dialogCollect = false
+        }) { title: String, author: String, link: String ->
+            dialogCollect = false
+            viewModel.postCollectArticleForExternal(title, author, link) {
+                viewModel.getMyCollectArticle(true)
+            }
+        }
+    }
+
+    if (dialogEdit) {
+        ShareDialog(title = "编辑收藏",
+            name = articleTitle,
+            author = articleAuthor,
+            link = articleLink,
+            onDismissRequest = {
+                dialogEdit = false
+            }) { title: String, author: String, link: String ->
+            dialogEdit = false
+            viewModel.handleEditCollectedArticle(articleId, title, author, link)
         }
     }
 
@@ -105,6 +171,7 @@ fun CollectArticleView(
 private fun CollectArticleItem(
     modifier: Modifier = Modifier,
     item: ArticleDTO,
+    onEditCollectedArticle: (ArticleDTO) -> Unit,
     onUnCollectArticle: (ArticleDTO) -> Unit,
     onArticleItemClick: (ArticleDTO) -> Unit
 ) {
@@ -161,7 +228,9 @@ private fun CollectArticleItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier
+                        .size(18.dp)
+                        .clickable { onEditCollectedArticle.invoke(item) },
                     tint = Color.Green,
                     painter = painterResource(id = R.drawable.ic_edit_collect),
                     contentDescription = "编辑收藏"

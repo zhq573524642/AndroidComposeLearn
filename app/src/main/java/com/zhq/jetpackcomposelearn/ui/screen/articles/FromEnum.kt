@@ -10,4 +10,6 @@ enum class FromEnum {
     officialAccountSearch,
     squareArticleList,
     shareUserArticleList,
+    authorArticleList,
+    myShareArticleList,
 }

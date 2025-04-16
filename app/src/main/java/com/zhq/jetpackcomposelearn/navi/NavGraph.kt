@@ -75,6 +75,25 @@ fun NavGraph(
                 },
                 onBannerItemClick = {//首页Banner
 
+                },
+                onAuthorClick = { item: ArticleDTO, isAuthor: Boolean ->
+                    if (isAuthor) {
+                        navHostController.navigate(
+                            ArticleRoute(
+                                FromEnum.authorArticleList,
+                                title = "作者：${item.author}",
+                                author = item.author
+                            )
+                        )
+                    } else {
+                        navHostController.navigate(
+                            ArticleRoute(
+                                FromEnum.shareUserArticleList,
+                                title = "分享者：${item.shareUser}",
+                                id = item.userId
+                            )
+                        )
+                    }
                 }
             ) { article: ArticleDTO ->//首页文章列表点击跳转
                 navHostController.navigate(WebViewRoute(article.title, article.link))
@@ -120,6 +139,14 @@ fun NavGraph(
                 onLoginClick = {
                     navHostController.navigate(PageRoute.LoginScreen.name)
                 },
+                onMyShare = {
+                    navHostController.navigate(
+                        ArticleRoute(
+                            from = FromEnum.myShareArticleList,
+                            title = "我的分享"
+                        )
+                    )
+                },
                 onTodoClick = {},
                 onIntegralClick = {},
                 onSettingClick = {
@@ -156,6 +183,26 @@ fun NavGraph(
                     navHostController.navigate(
                         WebViewRoute(title = it.title, url = it.link)
                     )
+                },
+                onAuthorClick = { article: ArticleDTO, isAuthor: Boolean ->
+
+                    if (isAuthor) {
+                        navHostController.navigate(
+                            ArticleRoute(
+                                FromEnum.authorArticleList,
+                                title = "作者：${article.author}",
+                                author = article.author
+                            )
+                        )
+                    } else {
+                        navHostController.navigate(
+                            ArticleRoute(
+                                from = FromEnum.shareUserArticleList,
+                                title = "分享人:${article.shareUser}",
+                                id = article.userId
+                            )
+                        )
+                    }
                 },
                 onCommonWebsiteItemClick = {
                     navHostController.navigate(
@@ -236,13 +283,23 @@ fun NavGraph(
             val route: ArticleRoute = navBackStackEntry.toRoute()
             ArticlesScreen(route = route, onScreenBack = { navHostController.popBackStack() },
                 onAuthorClick = { article: ArticleDTO, isAuthor: Boolean ->
-                     if (isAuthor){
-
-                     }else{
-                         navHostController.navigate(ArticleRoute(from = FromEnum.shareUserArticleList,
-                             title = "分享人:${article.shareUser}",
-                             id = article.userId))
-                     }
+                    if (isAuthor) {
+                        navHostController.navigate(
+                            ArticleRoute(
+                                FromEnum.authorArticleList,
+                                title = "作者：${article.author}",
+                                author = article.author
+                            )
+                        )
+                    } else {
+                        navHostController.navigate(
+                            ArticleRoute(
+                                from = FromEnum.shareUserArticleList,
+                                title = "分享人:${article.shareUser}",
+                                id = article.userId
+                            )
+                        )
+                    }
                 },
                 onArticleItemClick = { articleDTO: ArticleDTO ->
                     navHostController.navigate(

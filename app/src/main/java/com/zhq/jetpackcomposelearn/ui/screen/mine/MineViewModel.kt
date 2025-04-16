@@ -14,7 +14,7 @@ import javax.inject.Inject
  * Description
  */
 @HiltViewModel
-class MineViewModelBase @Inject constructor(private val repo: MineRepositoryImpl) :
+class MineViewModel @Inject constructor(private val repo: MineRepositoryImpl) :
     BaseArticleViewModel(repo) {
 
     fun getUserName(): String {

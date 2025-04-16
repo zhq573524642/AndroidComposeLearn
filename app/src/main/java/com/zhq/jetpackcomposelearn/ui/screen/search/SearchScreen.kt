@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.zhq.commonlib.base.widgets.BaseUiStateListPage
 import com.zhq.commonlib.utils.ColorUtils
+import com.zhq.jetpackcomposelearn.App
 import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.common.HorizontalSpace
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
@@ -62,9 +64,10 @@ private const val TAG = "SearchScreen"
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModelBase = hiltViewModel(),
+    viewModel: SearchViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
     onSearchResultItemClick: (ArticleDTO) -> Unit,
+    onAuthorClick: ((ArticleDTO, Boolean) -> Unit)? = null,
     onCommonWebsiteItemClick: (SearchHotKeyDTO) -> Unit
 ) {
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -76,12 +79,42 @@ fun SearchScreen(
     }
 
     val uiPageState by viewModel.uiPageState.collectAsState()
+    val collectData by App.appViewModel.collectEvent.observeAsState()
+    val user by App.appViewModel.user.collectAsState()
 
-    LaunchedEffect(key1 = Unit, block = {
-        //在显示搜索布局的时候请求焦点 显示键盘
-        if (showSearchLayout) {
-            focusRequester.requestFocus()
+    // 收藏事件监听
+    if (collectData != null) {
+        uiPageState.data?.forEach {
+            if (it.id == collectData!!.id) {
+                it.collect = collectData!!.collect
+            }
         }
+    }
+    // 用户退出时，收藏应全为false，登录时获取collectIds
+    if (user == null) {
+        uiPageState.data?.forEach {
+            it.collect = false
+        }
+    } else {
+        uiPageState.data?.forEach {
+            user?.userInfo?.collectIds?.forEach { id ->
+                if (id == it.id) {
+                    it.collect = true
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = uiPageState.data == null, block = {
+        //在显示搜索布局的时候请求焦点 显示键盘
+        if (uiPageState.data == null) {
+            if (showSearchLayout) {
+                focusRequester.requestFocus()
+            }
+        } else {
+            showSearchLayout = false
+        }
+
     })
 
     DynamicStatusBarScreen(
@@ -176,7 +209,10 @@ fun SearchScreen(
                     onLoadMore = {
                         viewModel.searchKeyword(false, searchText)
                     }) {
-                    ArticleItem(item = it, baseArticleViewModel = viewModel) {
+                    ArticleItem(item = it, baseArticleViewModel = viewModel,
+                        onAuthorClick = { article: ArticleDTO, isAuthor: Boolean ->
+                            onAuthorClick?.invoke(article, isAuthor)
+                        }) {
                         onSearchResultItemClick.invoke(it)
                     }
                 }
@@ -190,7 +226,7 @@ fun SearchScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchHotWords(
-    viewModel: SearchViewModelBase,
+    viewModel: SearchViewModel,
     onSearchKeyItemClick: (SearchHotKeyDTO) -> Unit
 ) {
     val list = viewModel.hotKeyList.collectAsState()
@@ -231,7 +267,7 @@ fun SearchHotWords(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CommonWebsite(
-    viewModel: SearchViewModelBase,
+    viewModel: SearchViewModel,
     onCommonWebsiteItemClick: (SearchHotKeyDTO) -> Unit
 ) {
     val list = viewModel.websiteList.collectAsState()

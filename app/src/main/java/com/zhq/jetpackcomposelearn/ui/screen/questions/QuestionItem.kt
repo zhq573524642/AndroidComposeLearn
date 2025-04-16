@@ -39,7 +39,7 @@ import com.zhq.jetpackcomposelearn.data.TagDTO
 @Composable
 fun QuestionItem(
     data: ArticleDTO,
-    viewModel: QuestionsViewModelBase,
+    viewModel: QuestionsViewModel,
     onQuestionItemClick: (ArticleDTO) -> Unit
 ) {
 

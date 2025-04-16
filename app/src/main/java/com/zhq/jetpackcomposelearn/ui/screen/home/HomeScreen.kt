@@ -38,10 +38,11 @@ import com.zhq.jetpackcomposelearn.ui.screen.articles.ArticleItem
  */
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModelBase = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     onSearchClick: () -> Unit,
     onMessageClick: () -> Unit,
     onBannerItemClick: (BannerDTO) -> Unit = {},
+    onAuthorClick: (ArticleDTO, Boolean) -> Unit,
     onArticleItemClick: (ArticleDTO) -> Unit
 ) {
     val bannerData by homeViewModel.bannerList.collectAsState()
@@ -145,7 +146,10 @@ fun HomeScreen(
         ArticleItem(
             item = it,
             baseArticleViewModel = homeViewModel,
-            onArticleItemClick = onArticleItemClick
+            onArticleItemClick = onArticleItemClick,
+            onAuthorClick = { item: ArticleDTO, isAuthor: Boolean ->
+                onAuthorClick.invoke(item, isAuthor)
+            }
         )
     }
 

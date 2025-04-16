@@ -60,7 +60,7 @@ private const val TAG = "ProjectsScreen"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectsScreen(
-    viewModel: ProjectsViewModelBase = hiltViewModel(),
+    viewModel: ProjectsViewModel = hiltViewModel(),
     onSystemsClick: () -> Unit,
     onCoursesClick: () -> Unit,
     onProjectItemClick: (ArticleDTO) -> Unit

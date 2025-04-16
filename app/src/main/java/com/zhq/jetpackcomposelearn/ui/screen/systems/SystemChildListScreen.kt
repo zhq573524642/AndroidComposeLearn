@@ -49,7 +49,7 @@ data class SystemChildListRoute(
 fun SystemsChildListScreen(
     route: SystemChildListRoute,
     navHostController: NavHostController,
-    viewModel: SystemChildViewModelBase = hiltViewModel(),
+    viewModel: SystemChildViewModel = hiltViewModel(),
     onAuthorClick: (ArticleDTO) -> Unit,
     onItemClick: (ArticleDTO) -> Unit
 ) {

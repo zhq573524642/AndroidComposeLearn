@@ -42,7 +42,7 @@ import com.zhq.jetpackcomposelearn.data.ArticleDTO
  */
 @Composable
 fun QuestionsScreen(
-    viewModel: QuestionsViewModelBase = hiltViewModel(),
+    viewModel: QuestionsViewModel = hiltViewModel(),
     onSquareClick: () -> Unit,
     onQuestionItemClick: (ArticleDTO) -> Unit
 
