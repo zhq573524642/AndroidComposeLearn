@@ -87,7 +87,7 @@ fun NavGraph(
                     }
                 },
                 onBannerItemClick = {//首页Banner
-                   navHostController.navigate(WebViewRoute(title = it.title, url = it.url))
+                    navHostController.navigate(WebViewRoute(title = it.title, url = it.url))
                 },
                 onAuthorClick = { item: ArticleDTO, isAuthor: Boolean ->
                     if (isAuthor) {
@@ -114,9 +114,13 @@ fun NavGraph(
         }
         //鸿蒙模块
         composable(PageRoute.Harmony.name) {
-            HarmonyScreen(onItemClick = { title, link ->
-                navHostController.navigate(WebViewRoute(title = title, url = link))
-            })
+            HarmonyScreen(
+                onSearchClick = {
+                    val url = "https://ohpm.openharmony.cn/#/cn/result?q=${it}"
+                    navHostController.navigate(WebViewRoute(title = "鸿蒙", url = url))
+                }, onItemClick = { title, link ->
+                    navHostController.navigate(WebViewRoute(title = title, url = link))
+                })
         }
         //项目模块
         composable(PageRoute.Projects.name) {

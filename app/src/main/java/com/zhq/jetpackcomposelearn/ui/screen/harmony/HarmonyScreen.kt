@@ -1,4 +1,3 @@
-
 package com.zhq.jetpackcomposelearn.ui.screen.harmony
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.zhq.commonlib.utils.ToastUtils.showToast
 import com.zhq.jetpackcomposelearn.common.DynamicStatusBarScreen
 import com.zhq.jetpackcomposelearn.data.ArticleDTO
 
@@ -48,13 +48,15 @@ import com.zhq.jetpackcomposelearn.data.ArticleDTO
  * @Date 2025/3/6 14:24
  * Description
  */
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
     ExperimentalFoundationApi::class
 )
 @Composable
 fun HarmonyScreen(
     modifier: Modifier = Modifier,
     viewModel: HarmonyViewModel = hiltViewModel(),
+    onSearchClick: (key: String) -> Unit,
     onItemClick: (String, String) -> Unit
 ) {
     val datas by viewModel.harmonyData.collectAsState()
@@ -67,10 +69,14 @@ fun HarmonyScreen(
     DynamicStatusBarScreen(
         statusBarColor = Color(0xff262626),
         backgroundColor = Color(0xfff5f5f5)
-    ){
-        Column(modifier = modifier
-            .fillMaxSize()) {
-            HarmonyHeader()
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+        ) {
+            HarmonyHeader {
+                onSearchClick.invoke(it)
+            }
             Column(
                 modifier = Modifier.background(Color(0xfff5f5f5))
             ) {
@@ -120,7 +126,9 @@ fun HarmonyScreen(
 }
 
 @Composable
-fun HarmonyHeader(){
+fun HarmonyHeader(
+    onSearchClick: (key: String) -> Unit
+) {
     var inputContent by remember {
         mutableStateOf("")
     }
@@ -157,7 +165,11 @@ fun HarmonyHeader(){
             },
             trailingIcon = {
                 Text(text = "搜索", modifier = Modifier.clickable {
-
+                    if (inputContent.isEmpty()) {
+                        "请输入收索内容".showToast()
+                        return@clickable
+                    }
+                    onSearchClick.invoke(inputContent)
                 })
             }
         )
