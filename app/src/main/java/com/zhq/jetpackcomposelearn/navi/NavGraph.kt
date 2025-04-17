@@ -41,6 +41,8 @@ import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.SettingRoute
 import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.SettingScreen
 import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.ToolsRoute
 import com.zhq.jetpackcomposelearn.ui.screen.mine.setting.ToolsScreen
+import com.zhq.jetpackcomposelearn.ui.screen.mine.todo.TodoRoute
+import com.zhq.jetpackcomposelearn.ui.screen.mine.todo.TodoScreen
 import com.zhq.jetpackcomposelearn.ui.screen.projects.ProjectsScreen
 import com.zhq.jetpackcomposelearn.ui.screen.questions.QuestionsScreen
 import com.zhq.jetpackcomposelearn.ui.screen.search.SearchScreen
@@ -85,7 +87,7 @@ fun NavGraph(
                     }
                 },
                 onBannerItemClick = {//首页Banner
-
+                   navHostController.navigate(WebViewRoute(title = it.title, url = it.url))
                 },
                 onAuthorClick = { item: ArticleDTO, isAuthor: Boolean ->
                     if (isAuthor) {
@@ -158,7 +160,9 @@ fun NavGraph(
                         )
                     )
                 },
-                onTodoClick = {},
+                onTodoClick = {
+                    navHostController.navigate(TodoRoute)
+                },
                 onIntegralClick = {
                     navHostController.navigate(CoinRoute)
                 },
@@ -370,6 +374,12 @@ fun NavGraph(
                 onBackClick = {
                     navHostController.popBackStack()
                 })
+        }
+
+        composable<TodoRoute> { navBackStackEntry: NavBackStackEntry ->
+            TodoScreen {
+                navHostController.popBackStack()
+            }
         }
 
 

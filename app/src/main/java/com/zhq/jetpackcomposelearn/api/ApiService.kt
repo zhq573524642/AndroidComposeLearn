@@ -13,6 +13,7 @@ import com.zhq.jetpackcomposelearn.data.OfficialAccountDTO
 import com.zhq.jetpackcomposelearn.data.PageDTO
 import com.zhq.jetpackcomposelearn.data.SearchHotKeyDTO
 import com.zhq.jetpackcomposelearn.data.ShareUserDTO
+import com.zhq.jetpackcomposelearn.data.TodoDTO
 import com.zhq.jetpackcomposelearn.data.ToolsDTO
 import com.zhq.jetpackcomposelearn.data.UserDTO
 import com.zhq.jetpackcomposelearn.data.UserInfoDTO
@@ -364,4 +365,64 @@ interface ApiService {
      */
     @GET("maven_pom/search/json")
     suspend fun queryGoogleMavenPackageName(@Query("k") key: String): BaseResponse<List<GoogleMavenDTO>>
+
+    /**
+     * TODO列表
+     * page 1开始
+     * type:1工作，2生活，3娱乐
+     * priority 创建时传入的优先级；默认全部展示
+     * orderby 1:完成日期顺序；2.完成日期逆序；3.创建日期顺序；4.创建日期逆序(默认)；
+     */
+    @GET("lg/todo/v2/list/{page}/json")
+    suspend fun getTodoList(
+        @Path("page") pageIndex: Int,
+        @Query("status") status: Int,
+        @Query("type") type: Int,
+        @Query("priority") priority: Int,
+        @Query("orderby") orderby: Int
+    ): BaseResponse<PageDTO<TodoDTO>>
+
+    /**
+     * 新增一个TODO
+     */
+    @FormUrlEncoded
+    @POST("lg/todo/add/json")
+    suspend fun createTodo(
+        @Field("title") title: String,
+        @Field("content") content: String,
+        @Field("date") date: String,
+        @Field("type") type: Int,
+        @Field("priority") priority: Int
+    ): BaseResponse<Unit>
+
+    /**
+     * 删除一个TODO
+     */
+    @POST("lg/todo/delete/{id}/json")
+    suspend fun deleteTodo(@Path("id") id: Int): BaseResponse<Unit>
+
+    /**
+     * 更新一个TODO
+     */
+    @FormUrlEncoded
+    @POST("lg/todo/update/{id}/json")
+    suspend fun updateTodo(
+        @Path("id") id: Int,
+        @Field("title") title: String,
+        @Field("content") content: String,
+        @Field("date") date: String,
+        @Field("status") status: Int,
+        @Field("type") type: Int,
+        @Field("priority") priority: Int
+    ): BaseResponse<Unit>
+
+    /**
+     * 更新一个TODO的状态
+     */
+    @FormUrlEncoded
+    @POST("lg/todo/done/{id}/json")
+    suspend fun changeTodoStatus(
+        @Path("id") id: Int,
+        @Field("status") toStatus: Int
+    ):BaseResponse<Unit>
 }

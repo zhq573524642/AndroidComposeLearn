@@ -97,8 +97,7 @@ fun <T : ProvideItemKeys> BaseUiStateListPage(
                 } else {
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
+                            .fillMaxSize(),
                         state = lazyListState,
                         contentPadding = contentPadding,
                         verticalArrangement = Arrangement.spacedBy(itemSpace)

@@ -13,6 +13,7 @@ import com.zhq.jetpackcomposelearn.data.GoogleMavenDTO
 import com.zhq.jetpackcomposelearn.data.NavigationsDTO
 import com.zhq.jetpackcomposelearn.data.OfficialAccountDTO
 import com.zhq.jetpackcomposelearn.data.PageDTO
+import com.zhq.jetpackcomposelearn.data.TodoDTO
 import com.zhq.jetpackcomposelearn.data.ToolsDTO
 import java.util.jar.Attributes.Name
 import javax.inject.Inject
@@ -56,11 +57,32 @@ interface MineRepository {
 
     suspend fun getGetCoinRecordList(pageIndex: Int): BaseResponse<PageDTO<GetCoinDTO>>
 
-    suspend fun getToolsList():BaseResponse<List<ToolsDTO>>
+    suspend fun getToolsList(): BaseResponse<List<ToolsDTO>>
 
-    suspend fun getGoogleMavenPackageName():BaseResponse<List<String>>
+    suspend fun getGoogleMavenPackageName(): BaseResponse<List<String>>
 
-    suspend fun queryGoogleMavenPackageName(key:String):BaseResponse<List<GoogleMavenDTO>>
+    suspend fun queryGoogleMavenPackageName(key: String): BaseResponse<List<GoogleMavenDTO>>
+
+    suspend fun getTodoList(
+        pageIndex: Int,
+        status: Int,
+        type: Int,
+        priority: Int,
+        orderby: Int
+    ): BaseResponse<PageDTO<TodoDTO>>
+
+    suspend fun createTodo(
+        title: String, content: String, date: String,
+        type: Int, priority: Int
+    ): BaseResponse<Unit>
+
+    suspend fun deleteTodo(id: Int): BaseResponse<Unit>
+
+    suspend fun updateTodo(id: Int,
+                           title: String,content: String,date: String,
+                           status: Int,type: Int,priority: Int):BaseResponse<Unit>
+
+    suspend fun changeTodoStatus(id: Int,toStatus:Int):BaseResponse<Unit>
 }
 
 class MineRepositoryImpl @Inject constructor(private val apiService: ApiService) :
@@ -146,6 +168,46 @@ class MineRepositoryImpl @Inject constructor(private val apiService: ApiService)
 
     override suspend fun queryGoogleMavenPackageName(key: String): BaseResponse<List<GoogleMavenDTO>> {
         return apiService.queryGoogleMavenPackageName(key)
+    }
+
+    override suspend fun getTodoList(
+        pageIndex: Int,
+        status: Int,
+        type: Int,
+        priority: Int,
+        orderby: Int
+    ): BaseResponse<PageDTO<TodoDTO>> {
+        return apiService.getTodoList(pageIndex, status, type, priority, orderby)
+    }
+
+    override suspend fun createTodo(
+        title: String,
+        content: String,
+        date: String,
+        type: Int,
+        priority: Int
+    ): BaseResponse<Unit> {
+        return apiService.createTodo(title, content, date, type, priority)
+    }
+
+    override suspend fun deleteTodo(id: Int): BaseResponse<Unit> {
+        return apiService.deleteTodo(id)
+    }
+
+    override suspend fun updateTodo(
+        id: Int,
+        title: String,
+        content: String,
+        date: String,
+        status: Int,
+        type: Int,
+        priority: Int
+    ): BaseResponse<Unit> {
+        return apiService.updateTodo(id, title, content, date, status, type, priority)
+    }
+
+    override suspend fun changeTodoStatus(id: Int, toStatus: Int): BaseResponse<Unit> {
+       return apiService.changeTodoStatus(id, toStatus)
     }
 
 }
